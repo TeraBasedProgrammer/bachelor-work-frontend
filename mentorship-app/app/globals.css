@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme {
+  --font-poppins: Poppins, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-blue-brand: hsl(222.51, 73.22%, 53.14%); /* #3063DF */
+  --color-blue-sapphire: hsl(217.19, 75.59%, 50.2%); /* #2069E0 */
+  --color-blue-dark: hsl(220, 100%, 30%); /* #003399 */
+  --color-blue-neon: hsl(196.34, 100%, 56.08%); /* #1FC2FF */
+  --color-blue-mist: hsl(216.62, 74.76%, 79.8%); /* #A5C3F2 */
+  --color-blue-vivid: hsl(216.68, 75.69%, 50%); /* #1F6AE0 */
+  --color-blue-ocean: hsl(222.55, 65.22%, 50.39%); /* #2E5ED3 */
+  --color-blue-wave: hsl(198.03, 86.38%, 53.92%); /* #24B2EF */
+  --color-blue-lavender: hsl(222.86, 51.85%, 89.41%); /* #D6DEF2 */
+  --color-blue-soft-lavender: hsl(222.86, 74.47%, 90.78%); /* #D6E0F9 */
+  --color-blue-pastel: hsl(222.86, 96.92%, 87.25%); /* #BFD1FE */
+  --color-blue-cloud: hsl(223.33, 75%, 95.29%); /* #EAEFFC */
+  --color-blue-crystal: hsl(197.84, 90.24%, 83.92%); /* #B1E5FB */
+  --color-blue-powder: hsl(197.42, 75.61%, 91.96%); /* #DBF1FA */
+  --color-blue-footer: hsl(220, 99%, 30%); /* #013399 */
+
+  --color-yellow-brand: hsl(49.83, 100%, 52.55%); /* #FFD60D */
+  --color-yellow-amber: hsl(50.21, 99.17%, 52.75%); /* #FED70F */
+  --color-yellow-gold: hsl(50.37, 87.1%, 81.76%); /* #F9ECA8 */
+  --color-yellow-pastel: hsl(50, 78.95%, 92.55%); /* #FBF6DD */
+
+  --color-teal-light: hsl(182.77, 100%, 74.51%); /* #7DF9FF */
+  --color-teal-dark: hsl(197.73, 85.65%, 53.53%); /* #23B2EE */
+  --color-teal-mist: hsl(184.29, 73.68%, 92.55%); /* #DEF8FA */
+  --color-teal-ice: hsl(182.43, 86.05%, 83.14%); /* #AFF6F9 */
+
+  --color-green-mint: hsl(132, 75%, 92.16%); /* #DCFAE2 */
+  --color-green-light: hsl(132, 84.27%, 82.55%); /* #ADF8BC */
+  --color-green-bright: hsl(126, 100%, 74.51%); /* #7DFF8A */
+
+  --color-gray-dark: hsl(0, 0%, 21.57%); /* #373737 */
+  --color-gray-darkest: hsl(0, 0%, 8.24%); /* #151515 */
+  --color-gray-charcoal: hsl(0, 0%, 20%); /* #333333 */
+  --color-gray-nightrider: hsl(0, 0%, 19%); /* #303030 */
+  --color-gray-slate: hsl(0, 0%, 32.16%); /* #525252 */
+  --color-gray-graphite: hsl(0, 0%, 39.22%); /* #646464 */
+  --color-gray-iron: hsl(0, 0%, 46.67%); /* #777777 */
+  --color-gray-titanium: hsl(0, 0%, 50.98%); /* #828282 */
+  --color-gray-steel: hsl(0, 0%, 52.16%); /* #858585 */
+  --color-gray-medium: hsl(0, 0%, 53.33%); /* #888888 */
+  --color-gray-quartz: hsl(0, 0%, 59.22%); /* #979797 */
+  --color-gray-quicksilver: hsl(0, 0%, 63%); /* #A1A1A1 */
+  --color-gray-blue: hsl(216, 29.41%, 96.67%); /* #F4F6F9 */
+  --color-gray-bluish: hsl(223.33, 23.08%, 84.71%); /* #CFD4E1 */
+  --color-gray-pearl: hsl(0, 0%, 79.22%); /* #CACACA */
+  --color-gray-cloudy: hsl(0, 0%, 81.18%); /* #CFCFCF */
+  --color-gray-frost: hsl(0, 0%, 93.33%); /* #EEEEEE */
+  --color-gray-porcelain: hsl(0, 0%, 95.69%); /* #F4F4F4 */
+  --color-gray-ivory: hsl(0, 0%, 94.9%); /* #F2F2F2 */
+  --color-gray-snow: hsl(0, 0%, 98.04%); /* #FAFAFA */
+
+  --color-pink-strawberry: hsl(5.17, 78.38%, 85.49%); /* #F7C2BD */
+  --color-pink-blush: hsl(4.14, 78.38%, 92.75%); /* #FBE0DE */
+
+  --color-red-alert: hsl(0, 79.91%, 44.9%); /* #CE1717 */
+  --color-red-crimson: hsl(5.61, 78.08%, 57.06%); /* #E74C3C */
+  --color-red-scarlet: hsl(5.26, 78.08%, 57.06%); /* #E74B3C */
+
+  --radius-4xl: 1.625rem;
+  --radius-5xl: 2rem;
+
+  --shadow-soft: "0px 4px 16px 0px rgba(0, 0, 0, 0.15)";
+
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
