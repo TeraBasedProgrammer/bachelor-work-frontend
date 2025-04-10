@@ -7,20 +7,27 @@ import { toast } from '@/hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import * as z from 'zod';
 
-const formSchema = z.object({
-  emailInput: z.string().email('Please enter a valid email'),
-  passwordInput: z.string().min(6, 'Password must be at least 6 characters'),
-});
+const formSchema = z
+  .object({
+    emailInput: z.string().email('Please enter a valid email'),
+    fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+    phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number'),
+    passwordInput: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  })
+  .refine((data) => data.passwordInput === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
-export default function LoginForm() {
+export default function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const params = useParams();
   const lng = params.lng as string;
 
@@ -28,52 +35,14 @@ export default function LoginForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       emailInput: '',
+      fullName: '',
+      phoneNumber: '',
       passwordInput: '',
+      confirmPassword: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-
-    try {
-      const res = await signIn('credentials', {
-        email: values.emailInput,
-        password: values.passwordInput,
-        redirect: false,
-      });
-      console.log('🚀 ~ onSubmit ~ res:', res);
-
-      if (!res) {
-        toast({
-          title: 'Unexpected Error',
-          description: 'Something went wrong. Please try again later.',
-          variant: 'destructive',
-        });
-      } else if (res.error) {
-        toast({
-          title: 'Login Failed1',
-          description: res.error,
-          variant: 'destructive',
-        });
-      } else if (res.ok) {
-        router.push(`/${lng}/profile`);
-      } else {
-        toast({
-          title: 'Login Failed',
-          description: 'Invalid email or password. Please try again.',
-          variant: 'destructive',
-        });
-      }
-    } catch (err) {
-      toast({
-        title: 'Network Error',
-        description: 'Could not connect to the server. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  async function onSubmit(values: z.infer<typeof formSchema>) {}
 
   async function handleGoogleLogin() {
     setIsLoading(true);
@@ -96,7 +65,7 @@ export default function LoginForm() {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 border-2 border-gray-200 rounded-md py-8 px-14 mx-auto backdrop-blur-sm">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">Login</h2>
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">Sign up</h2>
 
         <Button
           type="button"
@@ -129,6 +98,32 @@ export default function LoginForm() {
 
         <FormField
           control={form.control}
+          name="fullName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Full Name" {...field} disabled={isLoading} />
+              </FormControl>
+              <FormMessage className="text-red-500" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phoneNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Phone Number" {...field} disabled={isLoading} />
+              </FormControl>
+              <FormMessage className="text-red-500" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="passwordInput"
           render={({ field }) => (
             <FormItem>
@@ -139,21 +134,36 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <div className="flex justify-end text-sm">
-          <Link className="underline" href={`/${lng}/forgot-password`}>
-            Forgot password?
-          </Link>
-        </div>
+
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  placeholder="Confirm Password"
+                  type="password"
+                  {...field}
+                  className="w
+               -96"
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <FormMessage className="text-red-500" />
+            </FormItem>
+          )}
+        />
         <Button
           className="bg-blue-brand text-white font-semibold w-full"
           type="submit"
           disabled={isLoading}>
-          {isLoading ? 'Signing in...' : 'Sign in'}
+          {isLoading ? 'Signing up...' : 'Sign up'}
         </Button>
         <div className="flex justify-center text-sm">
-          <p>Don't have an account? </p>
-          <Link className="ml-1 underline" href={`/${lng}/sign-up`}>
-            Sign up
+          <p>Already have an account? </p>
+          <Link className="ml-1 underline" href={`/${lng}/login`}>
+            Login
           </Link>
         </div>
       </form>
