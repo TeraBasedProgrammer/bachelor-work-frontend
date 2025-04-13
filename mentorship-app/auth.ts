@@ -3,7 +3,11 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
 class InvalidLoginError extends CredentialsSignin {
-  code = 'Invalid identifier or password';
+  code: string;
+  constructor(message: string) {
+    super(message);
+    this.code = message;
+  }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -29,8 +33,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const data = await res.json();
 
-        if (!res.ok && data) {
-          return { status: res.status, error: data.detail.message };
+        if (!res.ok) {
+          throw new InvalidLoginError(data.detail || 'Invalid credentials');
         }
 
         return {

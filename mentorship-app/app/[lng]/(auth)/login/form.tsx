@@ -51,8 +51,8 @@ export default function LoginForm() {
         });
       } else if (res.error) {
         toast({
-          title: 'Login Failed1',
-          description: res.error,
+          title: 'Login Failed',
+          description: res.code,
           variant: 'destructive',
         });
       } else if (res.ok) {

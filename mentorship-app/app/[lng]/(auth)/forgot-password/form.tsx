@@ -59,15 +59,13 @@ export default function ForgotPasswordForm() {
     return (
       <div className="space-y-6 border-2 border-gray-200 rounded-md py-8 px-14 mx-auto backdrop-blur-sm">
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">Check your email</h2>
-        <p className="text-center text-gray-600">
+        <p className="text-center">
           We've sent password reset instructions to your email address. Please check your inbox and
           follow the link to reset your password.
         </p>
         <div className="flex justify-center">
           <Link href={`/${lng}/login`}>
-            <Button variant="outline" className="mt-4">
-              Return to login
-            </Button>
+            <Button className="mt-4 bg-blue-brand font-semibold">Return to login</Button>
           </Link>
         </div>
       </div>
