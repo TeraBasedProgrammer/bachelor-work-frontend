@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 import { toast } from '@/hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
@@ -41,7 +42,6 @@ export default function LoginForm() {
         password: values.passwordInput,
         redirect: false,
       });
-      console.log('🚀 ~ onSubmit ~ res:', res);
 
       if (!res) {
         toast({
@@ -130,10 +130,10 @@ export default function LoginForm() {
         <FormField
           control={form.control}
           name="passwordInput"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Password" type="password" {...field} disabled={isLoading} />
+                <PasswordInput control={form.control} name="passwordInput" disabled={isLoading} />
               </FormControl>
               <FormMessage className="text-red-500" />
             </FormItem>

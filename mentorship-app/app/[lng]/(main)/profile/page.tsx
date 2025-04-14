@@ -1,3 +1,9 @@
+// app/[lng]/profile/page.tsx or similar
+import { auth } from '@/auth';
+import ProfileForm from './form';
+
 export default async function ProfilePage() {
-  return <div className="text-red-500 text-5xl">Profile page</div>;
+  const session = await auth();
+
+  return <ProfileForm session={session} />;
 }

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/useToast';
+import { axiosInstance } from '@/lib/services/axiosConfig';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -31,18 +32,21 @@ export default function ForgotPasswordForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      // Here you would implement the actual password reset logic
-      // For example, calling an API endpoint to send a reset email
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Show success message
+      await axiosInstance.post(
+        '/users/auth/forgot-password/request',
+        {
+          email: values.emailInput,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
       toast({
         title: 'Reset email sent',
         description: 'Check your inbox for instructions to reset your password.',
       });
-
       setIsSubmitted(true);
     } catch (error) {
       toast({

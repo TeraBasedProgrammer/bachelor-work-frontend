@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 import { toast } from '@/hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
@@ -125,10 +126,10 @@ export default function SignUpForm() {
         <FormField
           control={form.control}
           name="passwordInput"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Password" type="password" {...field} disabled={isLoading} />
+                <PasswordInput control={form.control} name="passwordInput" disabled={isLoading} />
               </FormControl>
               <FormMessage className="text-red-500" />
             </FormItem>
@@ -138,16 +139,14 @@ export default function SignUpForm() {
         <FormField
           control={form.control}
           name="confirmPassword"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormControl>
-                <Input
-                  placeholder="Confirm Password"
-                  type="password"
-                  {...field}
-                  className="w
-               -96"
+                <PasswordInput
+                  control={form.control}
+                  name="confirmPassword"
                   disabled={isLoading}
+                  placeholder="Confirm Password"
                 />
               </FormControl>
               <FormMessage className="text-red-500" />
