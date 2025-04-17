@@ -1,6 +1,7 @@
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/providers/Toaster';
 import type { Metadata } from 'next';
+import { SessionProvider } from 'next-auth/react';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -27,10 +28,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <QueryProvider>
-          {children}
-          <Toaster />
-        </QueryProvider>
+        <SessionProvider>
+          <QueryProvider>
+            {children}
+            <Toaster />
+          </QueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -10,7 +10,7 @@ class InvalidLoginError extends CredentialsSignin {
   }
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth } = NextAuth({
   providers: [
     // 🔹 Credentials provider (email/password)
     CredentialsProvider({
@@ -38,9 +38,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         return {
-          id: data.user?.id || credentials?.email,
-          email: data.user?.email || credentials?.email,
           token: data.token,
+          user: data.user, // 🔹 Return the full user object
         };
       },
     }),
@@ -68,10 +67,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           return {
-            id: profile.sub,
-            email: profile.email,
-            name: profile.name,
             token: data.token,
+            user: data.user, // 🔹 Return the full user object
           };
         } catch (error: any) {
           throw new Error(error.message || 'Something went wrong with Google login');
@@ -88,16 +85,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // 🔹 Custom callbacks for session and token
   callbacks: {
     async jwt({ token, user }) {
-      if (user?.token) {
+      if (user) {
         token.accessToken = user.token;
+        token.user = user.user || null;
       }
       return token;
     },
 
     async session({ session, token }) {
-      if (token?.accessToken) {
-        session.accessToken = token.accessToken;
-      }
+      session.accessToken = token.accessToken;
+      session.user = token.user || session.user;
       return session;
     },
   },
