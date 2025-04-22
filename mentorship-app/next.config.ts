@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'github.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'bachelor-work-files.s3.eu-north-1.amazonaws.com',
+      },
     ],
   },
 };

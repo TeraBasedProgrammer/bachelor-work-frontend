@@ -57,14 +57,7 @@ export const imageInputValidation = (hasExistingImage: boolean) =>
           'Allowed formats: SVG, PNG, JPG, WEBP, AVIF',
         ),
     )
-    .superRefine((files, ctx) => {
-      if (!hasExistingImage && files.length === 0) {
-        ctx.addIssue({
-          code: 'custom',
-          message: 'At least one image is required',
-        });
-      }
-    });
+    .optional();
 
 export const useFileUpload = () => {
   const context = useContext(FileUploaderContext);

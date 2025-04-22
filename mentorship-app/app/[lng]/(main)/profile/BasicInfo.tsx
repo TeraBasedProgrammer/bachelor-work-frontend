@@ -1,6 +1,6 @@
 'use client';
 
-import { ActivityCategory, ActivityCategoryUser, UserData } from '@/app/types';
+import { ActivityCategory, UserData } from '@/app/types';
 import { Button } from '@/components/ui/button';
 import { imageInputValidation } from '@/components/ui/file-upload';
 import {
@@ -14,7 +14,10 @@ import {
 import { ImageInput } from '@/components/ui/image-input/image-input';
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
+import { toast } from '@/hooks/useToast';
+import { axiosInstance } from '@/lib/services/axiosConfig';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -29,37 +32,80 @@ const formSchema = (hasExistingImage: boolean) =>
   z.object({
     userAvatarInput: imageInputValidation(hasExistingImage),
     emailInput: z.string().optional(),
-    fullNameInput: z.string().min(1).optional(),
-    phoneNumberInput: z.string().min(1).optional(),
-    categoriesInput: z.array(z.string()).optional(),
+    fullNameInput: z.string().min(1, 'Name is required').optional(),
+    phoneNumberInput: z.string().min(1, 'Phone number is required').optional(),
+    categoriesInput: z.array(z.string()).min(1, 'At least one category is required'),
   });
 
 type FormValues = z.infer<ReturnType<typeof formSchema>>;
 
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userData }) => {
-  const [selectedCategories, setSelectedCategories] = useState<ActivityCategoryUser[]>(
-    userData?.activity_categories.filter((category) => category.type === 'S') ?? [],
-  );
+  const [currentUser, setCurrentUser] = useState<UserData | null>(userData);
+  const [isLoading, setIsLoading] = useState(false);
+  const session = useSession();
+
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema(userData?.profile_picture !== null)),
+    resolver: zodResolver(formSchema(currentUser?.profile_picture !== null)),
     defaultValues: {
       userAvatarInput: [],
+      categoriesInput:
+        currentUser?.activity_categories
+          .filter((category) => category.type === 'S')
+          .map((category) => category.id.toString()) || [],
     },
   });
 
   useEffect(() => {
-    if (userData) {
+    if (currentUser) {
       form.reset({
-        emailInput: userData.email,
-        fullNameInput: userData.name,
-        phoneNumberInput: userData.phone_number,
-        categoriesInput: [],
+        emailInput: currentUser.email,
+        fullNameInput: currentUser.name,
+        phoneNumberInput: currentUser.phone_number,
+        categoriesInput: currentUser.activity_categories
+          .filter((category) => category.type === 'S')
+          .map((category) => category.id.toString()),
       });
     }
-  }, [userData, form]);
+  }, [currentUser, form]);
 
-  function onSubmit(values: z.infer<ReturnType<typeof formSchema>>) {
-    console.log(values);
+  async function onSubmit(values: FormValues) {
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+
+      // Add file if present
+      if (values.userAvatarInput?.[0]) {
+        formData.append('profile_picture', values.userAvatarInput[0]);
+      }
+
+      // Add other fields
+      formData.append('name', values.fullNameInput || '');
+      formData.append('phone_number', values.phoneNumberInput || '');
+      formData.append('activity_categories', JSON.stringify(values.categoriesInput));
+
+      const response = await axiosInstance.patch(`/users/${currentUser?.id}/update`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${session?.data?.accessToken}`,
+        },
+      });
+
+      setCurrentUser(response.data);
+
+      toast({
+        title: 'Success',
+        description: 'Profile updated successfully',
+        variant: 'success',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: `Failed to update profile: ${error}`,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -77,7 +123,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                 <div className="flex gap-4 items-center">
                   <Image
                     className="rounded-md"
-                    src="https://github.com/shadcn.png"
+                    src={currentUser?.profile_picture || 'https://github.com/shadcn.png'}
                     alt="User avatar"
                     width={100}
                     height={100}
@@ -90,7 +136,6 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                   />
                 </div>
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -103,9 +148,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="Enter you email" disabled type="email" {...field} />
+                <Input placeholder="Enter your email" disabled type="email" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -118,9 +162,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
             <FormItem>
               <FormLabel>Full name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your name" type="" {...field} />
+                <Input placeholder="Enter your name" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -133,9 +176,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
             <FormItem>
               <FormLabel>Phone number</FormLabel>
               <FormControl>
-                <Input placeholder="Enter phone number" type="" {...field} />
+                <Input placeholder="Enter phone number" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -153,30 +195,24 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                     label: category.title,
                     value: category.id.toString(),
                   }))}
-                  onValueChange={(value) => {
-                    setSelectedCategories(
-                      value
-                        .map((id) => activityCategories.find((category) => category.id === id))
-                        .filter(
-                          (category): category is ActivityCategoryUser => category !== undefined,
-                        ),
-                    );
-                  }}
-                  defaultValue={selectedCategories.map((category) => category.title)}
+                  value={field.value}
+                  onChange={field.onChange}
                   placeholder="Select categories"
                   variant="inverted"
                   animation={2}
                   maxCount={3}
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="bg-blue-brand text-white font-semibold">
-          Update
+        <Button
+          type="submit"
+          className="bg-blue-brand text-white font-semibold"
+          disabled={isLoading}>
+          {isLoading ? 'Updating...' : 'Update'}
         </Button>
       </form>
     </Form>
