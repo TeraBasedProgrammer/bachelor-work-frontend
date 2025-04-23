@@ -15,7 +15,7 @@ import {
 } from './dropdown-menu';
 export default function Header() {
   const { lng } = useParams();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   return (
     <header className="bg-gray-100">
@@ -39,7 +39,14 @@ export default function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="w-12 h-12">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarImage
+                src={
+                  session?.user?.profile_picture
+                    ? `${session.user.profile_picture}?v=${new Date().getTime()}`
+                    : 'https://github.com/shadcn.png'
+                }
+                alt="@shadcn"
+              />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>

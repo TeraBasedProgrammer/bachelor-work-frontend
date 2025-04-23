@@ -17,6 +17,7 @@ import { MultiSelect } from '@/components/ui/multi-select';
 import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -42,7 +43,7 @@ type FormValues = z.infer<ReturnType<typeof formSchema>>;
 const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userData }) => {
   const [currentUser, setCurrentUser] = useState<UserData | null>(userData);
   const [isLoading, setIsLoading] = useState(false);
-  const session = useSession();
+  const { data: sessionData, update: updateSession } = useSession();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema(currentUser?.profile_picture !== null)),
@@ -86,11 +87,39 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
       const response = await axiosInstance.patch(`/users/${currentUser?.id}/update`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${session?.data?.accessToken}`,
+          Authorization: `Bearer ${sessionData?.accessToken}`,
         },
       });
 
       setCurrentUser(response.data);
+
+      const updatedSession = {
+        ...sessionData,
+        user: {
+          ...sessionData?.user,
+          id: response.data.id,
+          email: response.data.email,
+          phone_number: response.data.phone_number,
+          name: response.data.name,
+          profile_picture: response.data.profile_picture,
+          id_card_photo: response.data.id_card_photo,
+          is_verified: response.data.is_verified,
+          balance: response.data.balance,
+          cv_link: response.data.cv_link,
+          about_me_text: response.data.about_me_text,
+          about_me_video_link: response.data.about_me_video_link,
+          service_price: response.data.service_price,
+          service_price_type: response.data.service_price_type,
+          longitude: response.data.longitude,
+          latitude: response.data.latitude,
+          is_admin: response.data.is_admin,
+          created_at: response.data.created_at,
+          updated_at: response.data.updated_at,
+          activity_categories: response.data.activity_categories,
+        },
+      };
+
+      await updateSession(updatedSession);
 
       toast({
         title: 'Success',
@@ -98,11 +127,19 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
         variant: 'success',
       });
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: `Failed to update profile: ${error}`,
-        variant: 'destructive',
-      });
+      if (error instanceof AxiosError) {
+        toast({
+          title: 'Error',
+          description: `${error.response?.data.detail}`,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: `Failed to update profile: ${error}`,
+          variant: 'destructive',
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +160,11 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                 <div className="flex gap-4 items-center">
                   <Image
                     className="rounded-md"
-                    src={currentUser?.profile_picture || 'https://github.com/shadcn.png'}
+                    src={
+                      currentUser?.profile_picture
+                        ? `${currentUser.profile_picture}?v=${new Date().getTime()}`
+                        : 'https://github.com/shadcn.png'
+                    }
                     alt="User avatar"
                     width={100}
                     height={100}

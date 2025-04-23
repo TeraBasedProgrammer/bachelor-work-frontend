@@ -10,8 +10,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -55,10 +57,26 @@ export function ChangePasswordForm() {
         },
       );
 
-      console.log('Password changed successfully:', response.data);
+      toast({
+        title: 'Success',
+        description: 'Password changed successfully',
+        variant: 'success',
+      });
       form.reset();
     } catch (error) {
-      console.error('Failed to change password:', error);
+      if (error instanceof AxiosError) {
+        toast({
+          title: 'Error',
+          description: `${error.response?.data.detail}`,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Error',
+          description: `Failed to change password: ${error}`,
+          variant: 'destructive',
+        });
+      }
     }
   }
 

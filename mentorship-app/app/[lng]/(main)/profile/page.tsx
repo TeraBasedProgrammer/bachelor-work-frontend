@@ -1,7 +1,9 @@
 import { ActivityCategory, UserData } from '@/app/types';
 import { auth } from '@/auth';
 import { axiosInstance } from '@/lib/services/axiosConfig';
-import BasicInfoForm from './BasicInfo';
+import BalanceInfo from './components/BalanceInfo';
+import BasicInfoForm from './components/BasicInfo';
+import { ChangePasswordForm } from './components/ChangePassword';
 
 async function getActivityCategories(accessToken: string): Promise<ActivityCategory[]> {
   try {
@@ -39,7 +41,13 @@ export default async function ProfilePage() {
   return (
     <div className="w-2/3 mx-auto bg-[#f7f7f7] mt-10 rounded-lg p-10">
       <h1 className="mx-auto w-fit text-center text-5xl">User profile</h1>
-      <BasicInfoForm activityCategories={activityCategories} userData={userData} />
+      <div className="space-y-8">
+        <BasicInfoForm activityCategories={activityCategories} userData={userData} />
+      </div>
+      <hr className="max-w-3xl mx-auto my-10" />
+      <ChangePasswordForm />
+      <hr className="max-w-3xl mx-auto my-10" />
+      <BalanceInfo />
       <hr className="max-w-3xl mx-auto my-10" />
     </div>
   );
