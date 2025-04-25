@@ -84,7 +84,11 @@ export const { handlers, auth } = NextAuth({
 
   // 🔹 Custom callbacks for session and token
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === 'update') {
+        token.user = session.user;
+      }
+
       if (user) {
         token.accessToken = user.token;
         token.user = user.user || null;
