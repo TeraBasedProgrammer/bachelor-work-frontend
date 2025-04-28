@@ -6,7 +6,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
+    <div className="bg-[url('/profile-bg.jpg')] bg-cover bg-center bg-no-repeat">
       <Header />
       {children}
     </div>

@@ -10,7 +10,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { DropzoneOptions, DropzoneState, FileRejection, useDropzone } from 'react-dropzone';
@@ -18,7 +17,6 @@ import { DropzoneOptions, DropzoneState, FileRejection, useDropzone } from 'reac
 import { buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/useToast';
-
 import { cn } from '@/lib/utils/functions/styles';
 import * as z from 'zod';
 
@@ -37,27 +35,24 @@ type FileUploaderContextType = {
 
 const FileUploaderContext = createContext<FileUploaderContextType | null>(null);
 
-const allowedFileTypes = [
-  'image/jpeg',
-  'image/png',
-  'image/jpg',
-  'image/svg+xml',
-  'image/webp',
-  'image/avif',
-];
-
-export const imageInputValidation = (hasExistingImage: boolean) =>
+export const fileInputValidation = (
+  allowedMimeTypes: string[],
+  hasExistingFile: boolean,
+  maxSizeMB = 4,
+) =>
   z
     .array(
       z
         .custom<File>((file) => file instanceof File, 'Invalid file format')
-        .refine((file) => file.size <= 4 * 1024 * 1024, 'File must be under 4MB')
+        .refine((file) => file.size <= maxSizeMB * 1024 * 1024, `File must be under ${maxSizeMB}MB`)
         .refine(
-          (file) => allowedFileTypes.includes(file.type),
-          'Allowed formats: SVG, PNG, JPG, WEBP, AVIF',
+          (file) => allowedMimeTypes.includes(file.type),
+          `Allowed formats: ${allowedMimeTypes.join(', ')}`,
         ),
     )
-    .optional();
+    .optional()
+    .or(z.literal(undefined))
+    .refine((value) => hasExistingFile || (value && value.length > 0), 'File is required');
 
 export const useFileUpload = () => {
   const context = useContext(FileUploaderContext);
@@ -98,10 +93,9 @@ export const FileUploader = forwardRef<
     const [isFileTooBig, setIsFileTooBig] = useState(false);
     const [isLOF, setIsLOF] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
+
     const {
-      accept = {
-        'image/*': ['.jpg', '.jpeg', '.png', '.svg', '.webp', '.avif'],
-      },
+      accept = { '*/*': [] },
       maxFiles = maxFileCount ?? 1,
       maxSize = 4 * 1024 * 1024,
       multiple = true,
@@ -112,93 +106,19 @@ export const FileUploader = forwardRef<
 
     const removeFileFromSet = useCallback(
       (i: number) => {
-        if (!value) {
-          return;
-        }
+        if (!value) return;
         const newFiles = value.filter((_, index) => index !== i);
         onValueChange(newFiles);
       },
       [value, onValueChange],
     );
 
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!value) {
-          return;
-        }
-
-        const moveNext = () => {
-          const nextIndex = activeIndex + 1;
-          setActiveIndex(nextIndex > value.length - 1 ? 0 : nextIndex);
-        };
-
-        const movePrev = () => {
-          const nextIndex = activeIndex - 1;
-          setActiveIndex(nextIndex < 0 ? value.length - 1 : nextIndex);
-        };
-
-        let prevKey: string;
-        let nextKey: string;
-
-        if (orientation === 'horizontal') {
-          if (direction === 'ltr') {
-            prevKey = 'ArrowLeft';
-            nextKey = 'ArrowRight';
-          } else {
-            prevKey = 'ArrowRight';
-            nextKey = 'ArrowLeft';
-          }
-        } else {
-          prevKey = 'ArrowUp';
-          nextKey = 'ArrowDown';
-        }
-
-        if (e.key === nextKey) {
-          moveNext();
-        } else if (e.key === prevKey) {
-          movePrev();
-        } else if (e.key === 'Enter' || e.key === 'Space') {
-          if (activeIndex === -1) {
-            dropzoneState.inputRef.current?.click();
-          }
-        } else if (e.key === 'Delete' || e.key === 'Backspace') {
-          if (activeIndex !== -1) {
-            removeFileFromSet(activeIndex);
-            if (value.length - 1 === 0) {
-              setActiveIndex(-1);
-              return;
-            }
-            movePrev();
-          }
-        } else if (e.key === 'Escape') {
-          setActiveIndex(-1);
-        }
-      },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [value, activeIndex, removeFileFromSet, orientation, direction],
-    );
-
     const onDrop = useCallback(
       (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-        if (!acceptedFiles || acceptedFiles.length === 0) {
+        if (!acceptedFiles.length) {
           toast({
-            title: 'Error',
-            description: 'Uploaded files must be under 4mb',
-            variant: 'destructive',
-          });
-          return;
-        }
-
-        // Filter files that match the allowed formats
-        const validFiles = acceptedFiles.filter((file) => allowedFileTypes.includes(file.type));
-
-        if (validFiles.length === 0) {
-          toast({
-            title: 'Incorrect file format',
-            description: 'Allowed formats: SVG, PNG, JPG, WEBP, AVIF',
+            title: 'Upload failed',
+            description: 'No accepted files',
             variant: 'destructive',
           });
           return;
@@ -210,7 +130,7 @@ export const FileUploader = forwardRef<
           newValues.splice(0, newValues.length);
         }
 
-        validFiles.forEach((file) => {
+        acceptedFiles.forEach((file) => {
           if (newValues.length < maxFiles) {
             newValues.push(file);
           }
@@ -218,46 +138,26 @@ export const FileUploader = forwardRef<
 
         onValueChange(newValues);
 
-        rejectedFiles.forEach(({ errors, file }) => {
-          if (errors.some((err) => err.code === 'file-too-large')) {
+        rejectedFiles.forEach(({ file, errors }) => {
+          errors.forEach((error) => {
             toast({
-              title: 'Error',
-              description: `File ${file.name} is too large. Max size is ${maxSize / 1024 / 1024}MB`,
+              title: `Error: ${file.name}`,
+              description: error.message,
               variant: 'destructive',
             });
-          } else if (!allowedFileTypes.includes(file.type)) {
-            toast({
-              title: 'Error',
-              description: `Invalid file type: ${file.name}. Allowed formats: JPG, PNG, JPEG, SVG, WEBP, AVIF`,
-              variant: 'destructive',
-            });
-          } else if (errors.length > 0) {
-            toast({
-              title: 'Error',
-              description: errors[0].message,
-              variant: 'destructive',
-            });
-          }
+          });
         });
       },
-      [reSelectAll, value, maxFiles, maxSize, onValueChange],
+      [reSelectAll, value, maxFiles, onValueChange],
     );
 
     useEffect(() => {
-      if (!value) {
-        return;
-      }
-      if (value.length === maxFiles) {
-        setIsLOF(true);
-        return;
-      }
-      setIsLOF(false);
+      if (!value) return;
+      setIsLOF(value.length >= maxFiles);
     }, [value, maxFiles]);
 
-    const opts = dropzoneOptions || { accept, maxFiles, maxSize, multiple };
-
     const dropzoneState = useDropzone({
-      ...opts,
+      ...dropzoneOptions,
       onDrop,
       onDropRejected: () => setIsFileTooBig(true),
       onDropAccepted: () => setIsFileTooBig(false),
@@ -281,7 +181,6 @@ export const FileUploader = forwardRef<
       <FileUploaderContext.Provider value={contextObject}>
         <div
           ref={ref}
-          onKeyDownCapture={handleKeyDown}
           className={cn('grid w-full overflow-hidden focus:outline-hidden', className, {
             'gap-2': value && value.length > 0,
           })}
@@ -299,22 +198,12 @@ FileUploader.displayName = 'FileUploader';
 export const FileUploaderContent = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ children, className, ...props }, ref) => {
     const { orientation } = useFileUpload();
-    const containerRef = useRef<HTMLDivElement>(null);
-
     return (
-      <div
-        className={cn('w-full px-1')}
-        ref={containerRef}
-        aria-describedby="file-holder-description">
-        <span id="file-holder-description" className="sr-only">
-          Content file holder
-        </span>
+      <div className={cn('w-full px-1')} ref={ref} {...props}>
         <div
-          {...props}
-          ref={ref}
           className={cn(
             'flex gap-1 rounded-xl',
-            orientation === 'horizontal' ? 'flex-raw flex-wrap' : 'flex-col',
+            orientation === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col',
             className,
           )}>
           {children}
@@ -378,7 +267,7 @@ export const FileInput = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
           isLOF ? 'cursor-not-allowed opacity-50 ' : 'cursor-pointer '
         }`}>
         <div
-          className={cn('w-full rounded-lg duration-300 ease-in-out', borderColor, className)}
+          className={cn('w-full rounded-xl border-dashed bg-background', borderColor, className)}
           {...rootProps}>
           {children}
         </div>

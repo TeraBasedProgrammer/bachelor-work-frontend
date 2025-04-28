@@ -60,7 +60,7 @@ export default function Profile() {
           user.phone_number !== session.user.phone_number ||
           user.profile_picture !== session.user.profile_picture ||
           user.id_card_photo !== session.user.id_card_photo ||
-          user.is_verified !== session.user.is_verified ||
+          user.verification_status !== session.user.verification_status ||
           user.cv_link !== session.user.cv_link ||
           user.about_me_text !== session.user.about_me_text ||
           user.about_me_video_link !== session.user.about_me_video_link ||

@@ -2,19 +2,32 @@ import { CloudUpload, Paperclip } from 'lucide-react';
 import { MdOutlineCancel } from 'react-icons/md';
 import { FileInput, FileUploader, FileUploaderContent, FileUploaderItem } from '../file-upload';
 
-export type ImageInputProps = {
+export type FileInputComponentProps = {
   files: File[];
   onChange: (...event: unknown[]) => void;
   maxFiles?: number;
   inputId: string;
   onClose?: () => void;
+  accept?: string; // NEW: accept specific file types
+  placeholder?: string; // NEW: custom placeholder
+  helpText?: string; // NEW: bottom label text
 };
 
-export const ImageInput = ({ files, onChange, maxFiles, inputId, onClose }: ImageInputProps) => {
+export const FileInputComponent = ({
+  files,
+  onChange,
+  maxFiles,
+  inputId,
+  onClose,
+  accept = 'image/*',
+  placeholder = 'Click to upload or drag and drop',
+  helpText = 'File (up to 4MB)',
+}: FileInputComponentProps) => {
   const dropZoneConfig = {
     maxFiles: maxFiles ?? 1,
     maxSize: 1024 * 1024 * 4,
     multiple: true,
+    accept: { [accept]: [] },
   };
 
   return (
@@ -28,8 +41,8 @@ export const ImageInput = ({ files, onChange, maxFiles, inputId, onClose }: Imag
           <div className="justify-left flex h-11 max-h-11 w-full items-center gap-2 px-4">
             <CloudUpload className="h-6 w-6 text-blue-brand" />
             <div className="flex flex-col">
-              <p className="mb-0.5 text-[13px]">Click to upload or drag and drop</p>
-              <p className="text-gray-quartz text-xs">Image or GIF (up to 4MB)</p>
+              <p className="mb-0.5 text-[13px]">{placeholder}</p>
+              <p className="text-gray-quartz text-xs">{helpText}</p>
             </div>
           </div>
         </FileInput>
@@ -49,7 +62,7 @@ export const ImageInput = ({ files, onChange, maxFiles, inputId, onClose }: Imag
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full0 transition-all">
+          className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center">
           <MdOutlineCancel className="h-6 w-6 text-slate-500 hover:text-slate-600" />
         </button>
       )}

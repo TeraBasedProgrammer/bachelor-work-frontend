@@ -2,7 +2,7 @@
 
 import { ActivityCategory, UserData } from '@/app/types';
 import { Button } from '@/components/ui/button';
-import { imageInputValidation } from '@/components/ui/file-upload';
+import { fileInputValidation } from '@/components/ui/file-upload';
 import {
   Form,
   FormControl,
@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { ImageInput } from '@/components/ui/image-input/image-input';
+import { FileInputComponent } from '@/components/ui/image-input/image-input';
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { toast } from '@/hooks/useToast';
@@ -31,7 +31,10 @@ interface BasicInfoFormProps {
 
 const formSchema = (hasExistingImage: boolean) =>
   z.object({
-    userAvatarInput: imageInputValidation(hasExistingImage),
+    userAvatarInput: fileInputValidation(
+      ['image/png', 'image/jpeg', 'image/webp'],
+      hasExistingImage,
+    ),
     emailInput: z.string().optional(),
     fullNameInput: z.string().min(1, 'Name is required').optional(),
     phoneNumberInput: z.string().min(1, 'Phone number is required').optional(),
@@ -169,7 +172,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                     width={100}
                     height={100}
                   />
-                  <ImageInput
+                  <FileInputComponent
                     files={field.value ?? []}
                     onChange={field.onChange}
                     maxFiles={1}
