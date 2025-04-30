@@ -3,6 +3,14 @@
 import { UserVerification, VerificationStatus } from '@/app/types';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -17,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
 import { AxiosError } from 'axios';
@@ -39,6 +48,9 @@ export default function UserVerifications() {
   const [verifications, setVerifications] = useState<UserVerification[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<VerificationStatus | 'ALL'>('ALL');
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
+  const [selectedVerificationId, setSelectedVerificationId] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState('');
   const { data: session } = useSession();
 
   const fetchVerifications = async (status?: VerificationStatus) => {
@@ -116,7 +128,7 @@ export default function UserVerifications() {
     try {
       await axiosInstance.post(
         `/user-verification/${verificationId}/decline`,
-        {},
+        { reason: declineReason },
         {
           headers: {
             Authorization: `Bearer ${session.accessToken}`,
@@ -129,6 +141,9 @@ export default function UserVerifications() {
         variant: 'success',
       });
       fetchVerifications(selectedStatus === 'ALL' ? undefined : selectedStatus);
+      setIsDeclineModalOpen(false);
+      setDeclineReason('');
+      setSelectedVerificationId(null);
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
@@ -144,6 +159,11 @@ export default function UserVerifications() {
         });
       }
     }
+  };
+
+  const openDeclineModal = (verificationId: string) => {
+    setSelectedVerificationId(verificationId);
+    setIsDeclineModalOpen(true);
   };
 
   useEffect(() => {
@@ -172,6 +192,42 @@ export default function UserVerifications() {
           </SelectContent>
         </Select>
       </div>
+
+      <Dialog open={isDeclineModalOpen} onOpenChange={setIsDeclineModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Decline Verification</DialogTitle>
+            <DialogDescription>
+              Please provide a reason for declining this verification request.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              placeholder="Enter the reason for declining..."
+              value={declineReason}
+              onChange={(e) => setDeclineReason(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsDeclineModalOpen(false);
+                setDeclineReason('');
+                setSelectedVerificationId(null);
+              }}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700"
+              onClick={() => selectedVerificationId && handleDecline(selectedVerificationId)}
+              disabled={!declineReason.trim()}>
+              Decline
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="rounded-lg border border-gray-300 overflow-x-auto shadow-sm">
         <Table className="min-w-[1200px]">
@@ -221,13 +277,20 @@ export default function UserVerifications() {
                   <TableCell>{new Date(verification.updated_at).toLocaleString()}</TableCell>
                   <TableCell>{verification.user_id}</TableCell>
                   <TableCell>
-                    <Image
-                      src={verification.id_card_photo}
-                      alt="ID Card"
-                      width={80}
-                      height={80}
-                      className="rounded-md border"
-                    />
+                    <a
+                      href={verification.id_card_photo}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer">
+                      <Image
+                        src={verification.id_card_photo}
+                        alt="ID Card"
+                        width={80}
+                        height={80}
+                        className="rounded-md border hover:opacity-80 transition-opacity"
+                      />
+                    </a>
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate">
                     {verification.about_me_text}
@@ -275,9 +338,9 @@ export default function UserVerifications() {
                         {isLoading ? 'Approving...' : 'Approve'}
                       </Button>
                       <Button
-                        className="bg-red-600 hover:bg-red-700"
                         variant="destructive"
-                        onClick={() => handleDecline(verification.id)}
+                        className="bg-red-600 hover:bg-red-700"
+                        onClick={() => openDeclineModal(verification.id)}
                         disabled={verification.status !== 'PD'}>
                         {isLoading ? 'Declining...' : 'Decline'}
                       </Button>

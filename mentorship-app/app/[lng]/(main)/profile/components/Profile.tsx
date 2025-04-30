@@ -83,26 +83,40 @@ export default function Profile() {
   }, [session?.accessToken]);
 
   return (
-    <div className="w-2/3 mx-auto bg-[#f7f7f7] mt-10 rounded-lg p-10">
-      <h1 className="mx-auto w-fit text-center text-5xl">User profile</h1>
-      {!userData ? (
-        <div className="flex justify-center items-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-brand" />
-        </div>
-      ) : (
-        <>
-          <div className="space-y-8">
-            <BasicInfoForm activityCategories={activityCategories} userData={userData} />
+    <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="bg-white shadow-lg rounded-lg p-10 space-y-10">
+        <h1 className="text-center text-4xl font-extrabold text-gray-800">User Profile</h1>
+
+        {!userData ? (
+          <div className="flex justify-center items-center min-h-[300px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500" />
           </div>
-          <hr className="max-w-3xl mx-auto my-10" />
-          <MentorInfoForm activityCategories={activityCategories} userData={userData} />
-          <hr className="max-w-3xl mx-auto my-10" />
-          <ChangePasswordForm />
-          <hr className="max-w-3xl mx-auto my-10" />
-          <BalanceInfo userData={userData} />
-          <hr className="max-w-3xl mx-auto my-10" />
-        </>
-      )}
+        ) : (
+          <>
+            <section className="space-y-6">
+              <BasicInfoForm activityCategories={activityCategories} userData={userData} />
+            </section>
+
+            <div className="border-t border-gray-300 my-8" />
+
+            <section className="space-y-6">
+              <MentorInfoForm activityCategories={activityCategories} userData={userData} />
+            </section>
+
+            <div className="border-t border-gray-300 my-8" />
+
+            <section className="space-y-6">
+              <ChangePasswordForm />
+            </section>
+
+            <div className="border-t border-gray-300 my-8" />
+
+            <section className="space-y-6">
+              <BalanceInfo userData={userData} />
+            </section>
+          </>
+        )}
+      </div>
     </div>
   );
 }

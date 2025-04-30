@@ -55,3 +55,17 @@ export interface UserVerification {
   service_price_type: ServicePriceType;
   activity_categories: string[];
 }
+
+export interface Post {
+  id: string;
+  title: string;
+  description: string;
+  service_price: number;
+  service_type: 'S' | 'P';
+  user_id: string;
+  number_of_views: number;
+  created_at: string;
+  updated_at: string;
+  categories: ActivityCategory[];
+  category_ids: string[];
+}

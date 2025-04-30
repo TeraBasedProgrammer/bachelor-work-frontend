@@ -37,10 +37,10 @@ interface MentorInfoFormProps {
   userData: UserData | null;
 }
 
-const formSchema = (hasExistingIdCard: boolean) =>
+const formSchema = (hasExistingIdCard: boolean, hasExistingCV: boolean) =>
   z.object({
     idCardInput: fileInputValidation(['image/png', 'image/jpeg', 'image/webp'], hasExistingIdCard),
-    cvInput: fileInputValidation(['application/pdf'], false),
+    cvInput: fileInputValidation(['application/pdf'], hasExistingCV),
     aboutMeVideoInput: fileInputValidation(['video/mp4'], true),
     aboutMeText: z.string().min(1, 'About me text is required'),
     servicePrice: z.string().min(1, 'Service price is required'),
@@ -67,7 +67,9 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
   const { data: sessionData, update: updateSession } = useSession();
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema(currentUser?.id_card_photo !== null)),
+    resolver: zodResolver(
+      formSchema(currentUser?.id_card_photo !== null, currentUser?.cv_link !== null),
+    ),
     defaultValues: {
       idCardInput: [],
       cvInput: [],
