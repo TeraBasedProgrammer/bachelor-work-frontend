@@ -63,7 +63,7 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
     defaultValues: {
       title: post?.title || '',
       description: post?.description || '',
-      service_price: post?.service_price?.toString() || '',
+      service_price: post?.service_price ?? 0,
       service_type: post?.service_type || 'S',
       category_ids: post?.categories.map((category) => category.id) || [],
     },
@@ -173,7 +173,12 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
             <FormItem>
               <FormLabel>Price</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter price" {...field} />
+                <Input
+                  type="number"
+                  placeholder="Enter price"
+                  {...field}
+                  value={field.value?.toString() || ''}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

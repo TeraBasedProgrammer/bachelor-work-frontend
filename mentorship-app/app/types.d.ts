@@ -68,4 +68,5 @@ export interface Post {
   updated_at: string;
   categories: ActivityCategory[];
   category_ids: string[];
+  user: UserData;
 }

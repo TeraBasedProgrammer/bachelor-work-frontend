@@ -5,7 +5,7 @@ import axios, { AxiosError } from 'axios';
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface Participant {
@@ -36,6 +36,7 @@ interface Conversation {
 
 export default function MyChats() {
   const router = useRouter();
+  const lng = useParams().lng;
   const { data: session } = useSession();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,8 +47,7 @@ export default function MyChats() {
 
       try {
         const response = await axios.get(
-          //   `https://api.talkjs.com/v1/${process.env.NEXT_PUBLIC_TALKJS_APP_ID}/users/${session.user.id}/conversations`,
-          `https://api.talkjs.com/v1/${process.env.NEXT_PUBLIC_TALKJS_APP_ID}/users/12345/conversations`,
+          `https://api.talkjs.com/v1/${process.env.NEXT_PUBLIC_TALKJS_APP_ID}/users/${session.user.id}/conversations`,
           {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_TALKJS_SECRET_KEY}`,
@@ -99,7 +99,7 @@ export default function MyChats() {
               <div
                 key={conversation.id}
                 className="bg-white rounded-lg shadow-sm p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                onClick={() => router.push(`/chats/${conversation.id}`)}>
+                onClick={() => router.push(`/${lng}/chats/${conversation.id}`)}>
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <Image
