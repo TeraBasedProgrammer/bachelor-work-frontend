@@ -1,6 +1,8 @@
 'use client';
 
+import { UserData } from '@/app/types';
 import { toast } from '@/hooks/useToast';
+import { axiosInstance } from '@/lib/services/axiosConfig';
 import axios, { AxiosError } from 'axios';
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
@@ -34,12 +36,32 @@ interface Conversation {
   lastMessageAt: number;
 }
 
+interface ConversationWithUser extends Conversation {
+  otherUser?: UserData;
+}
+
 export default function MyChats() {
   const router = useRouter();
   const lng = useParams().lng;
   const { data: session } = useSession();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<ConversationWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const fetchUserData = async (userId: string) => {
+    if (!session?.accessToken) return null;
+
+    try {
+      const response = await axiosInstance.get(`/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -54,7 +76,29 @@ export default function MyChats() {
             },
           },
         );
-        setConversations(response.data.data);
+
+        const conversationsData = response.data.data;
+
+        // Fetch user data for each conversation's other participant
+        const conversationsWithUsers = await Promise.all(
+          conversationsData.map(async (conversation: Conversation) => {
+            const otherParticipant = Object.entries(conversation.participants).find(
+              ([id]) => id !== session.user.id,
+            );
+
+            if (!otherParticipant) return conversation;
+
+            const [participantId] = otherParticipant;
+            const userData = await fetchUserData(participantId);
+
+            return {
+              ...conversation,
+              otherUser: userData,
+            };
+          }),
+        );
+
+        setConversations(conversationsWithUsers);
       } catch (error) {
         if (!(error instanceof AxiosError)) {
           toast({
@@ -103,8 +147,10 @@ export default function MyChats() {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <Image
-                      src={conversation.photoUrl || 'https://github.com/shadcn.png'}
-                      alt="Avatar"
+                      src={
+                        conversation.otherUser?.profile_picture || 'https://github.com/shadcn.png'
+                      }
+                      alt={conversation.otherUser?.name || 'User avatar'}
                       width={48}
                       height={48}
                       className="rounded-full"
@@ -115,7 +161,9 @@ export default function MyChats() {
                   </div>
                   <div className="flex-grow">
                     <div className="flex justify-between items-start">
-                      <h3 className="font-semibold">{participantId}</h3>
+                      <h3 className="font-semibold">
+                        {conversation.otherUser?.name || participantId}
+                      </h3>
                       <span className="text-sm text-gray-500">
                         {format(conversation.lastMessageAt, 'MMM d, h:mm a')}
                       </span>

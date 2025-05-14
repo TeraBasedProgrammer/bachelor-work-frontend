@@ -108,8 +108,9 @@ export default function PostPage() {
       const conversations = response.data.data;
       const conversationWithPostUser = conversations.find(
         (conversation: any) =>
-          conversation.participants.includes(sessionData.user.id) &&
-          conversation.participants.includes(post?.user.id),
+          conversation.participants[sessionData.user.id] &&
+          post?.user.id &&
+          conversation.participants[post.user.id],
       );
 
       if (conversationWithPostUser) {
@@ -119,6 +120,7 @@ export default function PostPage() {
       }
     } catch (error) {
       if (!(error instanceof AxiosError)) {
+        console.log(error);
         toast({
           title: 'Error',
           description: 'Failed to fetch conversations',
