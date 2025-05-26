@@ -1,3 +1,4 @@
+import { CookiesProvider } from '@/components/providers/CookiesProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/providers/Toaster';
 import type { Metadata } from 'next';
@@ -28,12 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider>
-          <QueryProvider>
-            {children}
-            <Toaster />
-          </QueryProvider>
-        </SessionProvider>
+        <CookiesProvider>
+          <SessionProvider>
+            <QueryProvider>
+              {children}
+              <Toaster />
+            </QueryProvider>
+          </SessionProvider>
+        </CookiesProvider>
       </body>
     </html>
   );

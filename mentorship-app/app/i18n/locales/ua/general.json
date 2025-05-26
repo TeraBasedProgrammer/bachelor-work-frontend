@@ -1,0 +1,9 @@
+{
+    "categories": "Категорії",
+    "update": "Оновити",
+    "emailPlaceholder": "Електронна пошта",
+    "passwordPlaceholder": "Пароль",
+    "confirmPasswordPlaceholder": "Підтвердіть пароль",
+    "fullNamePlaceholder": "Ім'я",
+    "phoneNumberPlaceholder": "Номер телефону"
+}

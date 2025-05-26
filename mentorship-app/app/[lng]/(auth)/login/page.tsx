@@ -1,5 +1,5 @@
 import LoginForm from './form';
 
-export default async function LoginPage() {
-  return <LoginForm />;
+export default function LoginPage({ params: { lng } }: { params: { lng: string } }) {
+  return <LoginForm lng={lng} />;
 }

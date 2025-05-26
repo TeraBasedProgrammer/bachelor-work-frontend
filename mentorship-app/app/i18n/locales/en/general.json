@@ -1,0 +1,9 @@
+{
+    "categories": "Categories",
+    "update": "Update",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "fullNamePlaceholder": "Full Name",
+    "phoneNumberPlaceholder": "Phone Number"
+}

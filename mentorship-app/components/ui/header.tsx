@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './dropdown-menu';
+import { LangSwitcher } from './language-switcher';
 
 export default function Header() {
   const { lng } = useParams();
@@ -50,10 +51,14 @@ export default function Header() {
           <Link href={`/${lng}/profile`} className="hover:text-blue-600 transition-colors">
             Profile
           </Link>
+          <Link href={`/${lng}/invoices`} className="hover:text-blue-600 transition-colors">
+            Invoices
+          </Link>
         </div>
 
         {/* Right part */}
         <div className="flex items-center gap-6">
+          <LangSwitcher lng={lng as string} />
           {/* Balance */}
           <div className="flex items-center gap-2 text-gray-600">
             <PiCoinVerticalFill className="w-5 h-5 text-yellow-500" />

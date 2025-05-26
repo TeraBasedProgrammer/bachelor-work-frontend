@@ -1,12 +1,39 @@
 import { auth } from '@/auth';
-import type { NextRequest } from 'next/server';
+import acceptLanguage from 'accept-language';
 import { NextResponse } from 'next/server';
 
-export async function middleware(req: NextRequest) {
+import { cookieName, fallbackLng, languages } from './app/i18n/settings';
+
+export async function middleware(req: any) {
   const session = await auth();
   const { pathname } = req.nextUrl;
 
-  const [, lng, route] = pathname.split('/');
+  if (req.nextUrl.pathname.indexOf('icon') > -1 || req.nextUrl.pathname.indexOf('chrome') > -1)
+    return NextResponse.next();
+
+  const [, , route] = pathname.split('/');
+
+  let lng;
+  if (req.cookies.has(cookieName)) lng = acceptLanguage.get(req.cookies.get(cookieName).value);
+  if (!lng) lng = acceptLanguage.get(req.headers.get('Accept-Language'));
+  if (!lng) lng = fallbackLng;
+
+  if (
+    !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
+    !req.nextUrl.pathname.startsWith('/_next')
+  ) {
+    return NextResponse.redirect(
+      new URL(`/${lng}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url),
+    );
+  }
+
+  if (req.headers.has('referer')) {
+    const refererUrl = new URL(req.headers.get('referer'));
+    const lngInReferer = languages.find((l) => refererUrl.pathname.startsWith(`/${l}`));
+    const response = NextResponse.next();
+    if (lngInReferer) response.cookies.set(cookieName, lngInReferer);
+    return response;
+  }
 
   const publicRoutes = ['login', 'sign-up', 'forgot-password', 'reset'];
   const isPublic = publicRoutes.includes(route);

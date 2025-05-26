@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,7 @@ import { toast } from '@/hooks/useToast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
@@ -19,11 +20,11 @@ const formSchema = z.object({
   passwordInput: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-export default function LoginForm() {
+export default function LoginForm({ lng }: { lng: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const params = useParams();
-  const lng = params.lng as string;
+  const { t } = useTranslation(lng, 'auth');
+  const { t: tg } = useTranslation(lng, 'general');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,6 +33,8 @@ export default function LoginForm() {
       passwordInput: '',
     },
   });
+
+  if (!t || !tg) return null;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -96,7 +99,7 @@ export default function LoginForm() {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 border-2 border-gray-200 rounded-md py-8 px-14 mx-auto backdrop-blur-sm">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">Login</h2>
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">{t('loginTitle')}</h2>
 
         <Button
           type="button"
@@ -105,12 +108,12 @@ export default function LoginForm() {
           className="border-1 border-gray-200 w-full flex gap-2 justify-center items-center text-normal"
           disabled={isLoading}>
           <FcGoogle />
-          <p>Continue with Google</p>
+          <p>{t('continueWithGoogle')}</p>
         </Button>
 
         <div className="flex items-center justify-center">
           <hr className="w-full border-gray-200" />
-          <p className="mx-4 text-gray-500 text-sm">OR</p>
+          <p className="mx-4 text-gray-500 text-sm">{t('OR')}</p>
           <hr className="w-full border-gray-200" />
         </div>
 
@@ -120,7 +123,12 @@ export default function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Email" type="email" {...field} disabled={isLoading} />
+                <Input
+                  placeholder={tg('emailPlaceholder')}
+                  type="email"
+                  {...field}
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage className="text-red-500" />
             </FormItem>
@@ -133,7 +141,12 @@ export default function LoginForm() {
           render={() => (
             <FormItem>
               <FormControl>
-                <PasswordInput control={form.control} name="passwordInput" disabled={isLoading} />
+                <PasswordInput
+                  placeholder={tg('passwordPlaceholder')}
+                  control={form.control}
+                  name="passwordInput"
+                  disabled={isLoading}
+                />
               </FormControl>
               <FormMessage className="text-red-500" />
             </FormItem>
@@ -141,19 +154,19 @@ export default function LoginForm() {
         />
         <div className="flex justify-end text-sm">
           <Link className="underline" href={`/${lng}/forgot-password`}>
-            Forgot password?
+            {t('forgotPassword')}
           </Link>
         </div>
         <Button
           className="bg-blue-brand text-white font-semibold w-full"
           type="submit"
           disabled={isLoading}>
-          {isLoading ? 'Signing in...' : 'Sign in'}
+          {isLoading ? t('loginIn') + '...' : t('loginTitle')}
         </Button>
         <div className="flex justify-center text-sm">
-          <p>Don't have an account? </p>
+          <p>{t('dontHaveAccount')} </p>
           <Link className="ml-1 underline" href={`/${lng}/sign-up`}>
-            Sign up
+            {t('signUp')}
           </Link>
         </div>
       </form>
