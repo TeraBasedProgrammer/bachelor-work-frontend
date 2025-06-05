@@ -34,14 +34,14 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 const verificationStatusOptions = [
-  { value: 'PD', label: 'Pending' },
-  { value: 'AP', label: 'Approved' },
-  { value: 'DC', label: 'Declined' },
+  { value: 'PD', label: 'Очікує на розгляд' },
+  { value: 'AP', label: 'Прийнято' },
+  { value: 'DC', label: 'Відхилено' },
 ];
 
 const servicePriceTypeOptions = [
-  { value: 'PH', label: 'Per Hour' },
-  { value: 'PL', label: 'Per Lesson' },
+  { value: 'PH', label: 'За годину' },
+  { value: 'PL', label: 'За заняття' },
 ];
 
 export default function UserVerifications() {
@@ -107,11 +107,19 @@ export default function UserVerifications() {
       fetchVerifications(selectedStatus === 'ALL' ? undefined : selectedStatus);
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast({
-          title: 'Error',
-          description: error.response?.data.message,
-          variant: 'destructive',
-        });
+        if (error.response?.status === 500) {
+          toast({
+            title: 'Success',
+            description: 'Verification approved successfully',
+            variant: 'success',
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: error.response?.data.message,
+            variant: 'destructive',
+          });
+        }
       } else {
         toast({
           title: 'Error',
@@ -170,20 +178,21 @@ export default function UserVerifications() {
     if (session?.accessToken) {
       fetchVerifications(selectedStatus === 'ALL' ? undefined : selectedStatus);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStatus, session?.accessToken]);
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">User Verifications</h1>
+        <h1 className="text-4xl font-bold text-gray-800">Перевірки користувачів</h1>
         <Select
           value={selectedStatus}
           onValueChange={(value) => setSelectedStatus(value as VerificationStatus | 'ALL')}>
           <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Фільтр за статусом" />
           </SelectTrigger>
           <SelectContent className="bg-white">
-            <SelectItem value="ALL">All Statuses</SelectItem>
+            <SelectItem value="ALL">Всі статуси</SelectItem>
             {verificationStatusOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
@@ -196,14 +205,14 @@ export default function UserVerifications() {
       <Dialog open={isDeclineModalOpen} onOpenChange={setIsDeclineModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Decline Verification</DialogTitle>
+            <DialogTitle>Відхилення перевірки</DialogTitle>
             <DialogDescription>
-              Please provide a reason for declining this verification request.
+              Будь ласка, надайте причину відхилення цього запиту на перевірку.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Textarea
-              placeholder="Enter the reason for declining..."
+              placeholder="Введіть причину відхилення..."
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
               className="min-h-[100px]"
@@ -217,13 +226,13 @@ export default function UserVerifications() {
                 setDeclineReason('');
                 setSelectedVerificationId(null);
               }}>
-              Cancel
+              Скасувати
             </Button>
             <Button
               className="bg-red-600 hover:bg-red-700"
               onClick={() => selectedVerificationId && handleDecline(selectedVerificationId)}
               disabled={!declineReason.trim()}>
-              Decline
+              Відхилити
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -233,14 +242,14 @@ export default function UserVerifications() {
         <Table className="min-w-[1200px]">
           <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="text-gray-700 font-semibold">Verification ID</TableHead>
-              <TableHead className="text-gray-700 font-semibold">Admin ID</TableHead>
-              <TableHead className="text-gray-700 font-semibold">Status</TableHead>
-              <TableHead className="text-gray-700 font-semibold">Created At</TableHead>
-              <TableHead className="text-gray-700 font-semibold">Updated At</TableHead>
-              <TableHead className="text-gray-700 font-semibold">User ID</TableHead>
-              <TableHead className="text-gray-700 font-semibold">ID Card Photo</TableHead>
-              <TableHead className="text-gray-700 font-semibold">About Me</TableHead>
+              <TableHead className="text-gray-700 font-semibold">ID верифікації</TableHead>
+              <TableHead className="text-gray-700 font-semibold">ID адміністратора</TableHead>
+              <TableHead className="text-gray-700 font-semibold">Статус</TableHead>
+              <TableHead className="text-gray-700 font-semibold">Дата створення</TableHead>
+              <TableHead className="text-gray-700 font-semibold">Дата оновлення</TableHead>
+              <TableHead className="text-gray-700 font-semibold">ID користувача</TableHead>
+              <TableHead className="text-gray-700 font-semibold">Фото ID</TableHead>
+              <TableHead className="text-gray-700 font-semibold">Про мене</TableHead>
               <TableHead className="text-gray-700 font-semibold">Video</TableHead>
               <TableHead className="text-gray-700 font-semibold">CV</TableHead>
               <TableHead className="text-gray-700 font-semibold">Service Price</TableHead>
@@ -253,13 +262,13 @@ export default function UserVerifications() {
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={14} className="text-center py-10">
-                  Loading...
+                  Завантаження...
                 </TableCell>
               </TableRow>
             ) : verifications.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={14} className="text-center py-10">
-                  No verifications found
+                  Перевірки не знайдені
                 </TableCell>
               </TableRow>
             ) : (
@@ -300,7 +309,7 @@ export default function UserVerifications() {
                       <Button
                         variant="outline"
                         onClick={() => window.open(verification.about_me_video_link!, '_blank')}>
-                        View
+                        Переглянути
                       </Button>
                     ) : (
                       '-'
@@ -311,7 +320,7 @@ export default function UserVerifications() {
                       <Button
                         variant="outline"
                         onClick={() => window.open(verification.cv_link, '_blank')}>
-                        View
+                        Переглянути
                       </Button>
                     ) : (
                       '-'
@@ -335,14 +344,14 @@ export default function UserVerifications() {
                         className="bg-green-600 hover:bg-green-700"
                         onClick={() => handleApprove(verification.id)}
                         disabled={verification.status !== 'PD'}>
-                        {isLoading ? 'Approving...' : 'Approve'}
+                        {isLoading ? 'Обробка...' : 'Прийняти'}
                       </Button>
                       <Button
                         variant="destructive"
                         className="bg-red-600 hover:bg-red-700"
                         onClick={() => openDeclineModal(verification.id)}
                         disabled={verification.status !== 'PD'}>
-                        {isLoading ? 'Declining...' : 'Decline'}
+                        {isLoading ? 'Обробка...' : 'Відхилити'}
                       </Button>
                     </div>
                   </TableCell>

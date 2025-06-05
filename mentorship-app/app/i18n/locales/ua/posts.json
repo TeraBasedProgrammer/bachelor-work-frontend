@@ -1,0 +1,31 @@
+{
+    "editPost": "Редагувати",
+    "deletePost": "Вилучити",
+    "editPostTitle": "Редагувати пост",
+    "createNewPost": "Створити новий пост",
+    "updatePost": "Оновити пост",
+    "cancel": "Скасувати",
+    "saving": "Зберігається...",
+    "areYouSure": "Ви впевнені?",
+    "thisActionCannotBeUndone": "Ця дія не може бути скасована. Це призведе до безповоротного видалення вашого поста.",
+    "views": "переглядів",
+    "myposts": {
+        "title": "Мої пости",
+        "noPosts": "Ви ще не створили жодного поста",
+        "createPost": "Створити свій перший пост"
+    },
+    "postForm": {
+        "title": "Створити новий пост",
+        "titlePlaceholder": "Введіть заголовок поста",
+        "description": "Опис",
+        "descriptionPlaceholder": "Введіть опис поста",
+        "price": "Ціна",
+        "pricePlaceholder": "Введіть ціну",
+        "serviceType": "Тип послуги",
+        "Seeking Mentor": "Шукаю ментора",
+        "Offering Mentorship": "Пропоную менторство",
+        "categories": "Категорії",
+        "selectCategories": "Виберіть категорії",
+        "submit": "Створити пост"
+    }
+}

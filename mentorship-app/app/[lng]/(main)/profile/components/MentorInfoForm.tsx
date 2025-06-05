@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { ActivityCategory, UserData } from '@/app/types';
 import { Button } from '@/components/ui/button';
 import { fileInputValidation } from '@/components/ui/file-upload';
@@ -35,6 +36,7 @@ import * as z from 'zod';
 interface MentorInfoFormProps {
   activityCategories: ActivityCategory[];
   userData: UserData | null;
+  lng: string;
 }
 
 const formSchema = (hasExistingIdCard: boolean, hasExistingCV: boolean) =>
@@ -61,11 +63,11 @@ const verificationStatusOptions = [
   { value: 'PD', tag: <p className="text-yellow-600">Pending</p> },
 ];
 
-const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, userData }) => {
+const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, userData, lng }) => {
   const [currentUser, setCurrentUser] = useState<UserData | null>(userData);
   const [isLoading, setIsLoading] = useState(false);
   const { data: sessionData, update: updateSession } = useSession();
-
+  const { t } = useTranslation(lng as string, 'profile');
   const form = useForm<FormValues>({
     resolver: zodResolver(
       formSchema(currentUser?.id_card_photo !== null, currentUser?.cv_link !== null),
@@ -163,10 +165,10 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-        <h2 className="text-4xl">Mentor info</h2>
+        <h2 className="text-4xl">{t('mentorInfo.title')}</h2>
 
         <div className="flex gap-4 items-center">
-          <p className="text-sm text-gray-500">Verification status</p>
+          <p className="text-sm text-gray-500">{t('mentorInfo.verificationStatus')}</p>
           {
             verificationStatusOptions.find(
               (option) => option.value === currentUser?.verification_status,
@@ -179,7 +181,7 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="idCardInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>ID Card Photo</FormLabel>
+              <FormLabel>{t('mentorInfo.idCard')}</FormLabel>
               <FormControl>
                 <div className="flex gap-4 items-center">
                   {currentUser?.id_card_photo && (
@@ -196,6 +198,8 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
                     onChange={field.onChange}
                     maxFiles={1}
                     inputId="idCardInput"
+                    placeholder={t('mentorInfo.fileInputPlaceholder')}
+                    helpText={t('mentorInfo.fileInputHelpText')}
                   />
                 </div>
               </FormControl>
@@ -209,7 +213,7 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="cvInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>CV</FormLabel>
+              <FormLabel>{t('mentorInfo.cv')}</FormLabel>
               <FormControl>
                 <div className="flex gap-4 items-center">
                   {currentUser?.cv_link && (
@@ -218,7 +222,7 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-brand">
-                      Current CV
+                      {t('mentorInfo.currentCV')}
                     </a>
                   )}
                   <FileInputComponent
@@ -227,8 +231,8 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
                     maxFiles={1}
                     inputId="cvInput"
                     accept="application/pdf"
-                    placeholder="Upload your CV"
-                    helpText="PDF file (up to 4MB)"
+                    placeholder={t('mentorInfo.cvPlaceholder')}
+                    helpText={t('mentorInfo.cvHelpText')}
                   />
                 </div>
               </FormControl>
@@ -242,9 +246,9 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="aboutMeText"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>About Me</FormLabel>
+              <FormLabel>{t('mentorInfo.aboutMe')}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Tell about yourself..." {...field} />
+                <Textarea placeholder={t('mentorInfo.aboutMePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -256,11 +260,12 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="aboutMeVideoInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>About Me Video (Optional)</FormLabel>
+              <FormLabel>{t('mentorInfo.aboutMeVideo')}</FormLabel>
               <FormControl>
                 <div className="flex gap-4 items-center">
                   {currentUser?.about_me_video_link && (
                     <video width="200" controls>
+                      <track kind="captions" />
                       <source src={currentUser.about_me_video_link} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
@@ -271,8 +276,8 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
                     maxFiles={1}
                     inputId="aboutMeVideoInput"
                     accept="video/mp4"
-                    placeholder="Upload introduction video"
-                    helpText="MP4 video (up to 4MB)"
+                    placeholder={t('mentorInfo.uploadVideo')}
+                    helpText={t('mentorInfo.videoHelpText')}
                   />
                 </div>
               </FormControl>
@@ -286,9 +291,13 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="servicePrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Service Price</FormLabel>
+              <FormLabel>{t('mentorInfo.servicePrice')}</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter price" {...field} />
+                <Input
+                  type="number"
+                  placeholder={t('mentorInfo.servicePricePlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -300,17 +309,17 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="servicePriceType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price Type</FormLabel>
+              <FormLabel>{t('mentorInfo.priceType')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select price type" />
+                    <SelectValue placeholder={t('mentorInfo.priceTypePlaceholder')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-white">
                   {priceTypeOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                      {t(`mentorInfo.${option.label}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -325,7 +334,7 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           name="categoriesInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Categories</FormLabel>
+              <FormLabel>{t('mentorInfo.categories')}</FormLabel>
               <FormControl>
                 <MultiSelect
                   options={activityCategories.map((category) => ({
@@ -334,7 +343,7 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
                   }))}
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Select categories"
+                  placeholder={t('mentorInfo.categoriesPlaceholder')}
                   variant="inverted"
                   animation={2}
                   maxCount={3}
@@ -349,7 +358,7 @@ const MentorInfoForm: React.FC<MentorInfoFormProps> = ({ activityCategories, use
           type="submit"
           disabled={currentUser?.verification_status === 'PD' || isLoading}
           className="bg-blue-brand text-white font-semibold">
-          {isLoading ? 'Updating...' : 'Update'}
+          {isLoading ? t('mentorInfo.saving') : t('mentorInfo.save')}
         </Button>
       </form>
     </Form>

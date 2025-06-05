@@ -95,9 +95,12 @@ export const FileUploader = forwardRef<
     const [activeIndex, setActiveIndex] = useState(-1);
 
     const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       accept = { '*/*': [] },
       maxFiles = maxFileCount ?? 1,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       maxSize = 4 * 1024 * 1024,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       multiple = true,
     } = dropzoneOptions;
 

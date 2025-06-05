@@ -1,0 +1,14 @@
+{
+    "title": "Мої рахунки",
+    "noInvoices": "Немає рахунків",
+    "markAsPaid": "Позначити як оплачений",
+    "cancelInvoice": "Скасувати рахунок",
+    "cancellationReason": "Причина скасування",
+    "pleaseProvideReason": "Будь ласка, надайте причину скасування цього рахунку.",
+    "enterReasonForCancellation": "Введіть причину скасування",
+    "confirmCancellation": "Підтвердити скасування",
+    "created": "Створено",
+    "to": "До",
+    "due": "Термін",
+    "from": "Від"
+}

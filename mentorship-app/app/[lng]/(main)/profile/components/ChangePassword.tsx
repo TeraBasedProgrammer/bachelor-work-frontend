@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -31,7 +32,8 @@ const formSchema = z
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function ChangePasswordForm() {
+export function ChangePasswordForm({ lng }: { lng: string }) {
+  const { t } = useTranslation(lng, 'profile');
   const session = useSession();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -44,7 +46,7 @@ export function ChangePasswordForm() {
 
   async function onSubmit(values: FormValues) {
     try {
-      const response = await axiosInstance.patch(
+      await axiosInstance.patch(
         '/users/change-password',
         {
           old_password: values.oldPassword,
@@ -83,16 +85,20 @@ export function ChangePasswordForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-        <h2 className="text-4xl">Change password</h2>
+        <h2 className="text-4xl">{t('changePassword.title')}</h2>
 
         <FormField
           control={form.control}
           name="oldPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Old password</FormLabel>
+              <FormLabel>{t('changePassword.oldPassword')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter your old password" {...field} />
+                <Input
+                  type="password"
+                  placeholder={t('changePassword.oldPasswordPlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,9 +110,13 @@ export function ChangePasswordForm() {
           name="newPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New password</FormLabel>
+              <FormLabel>{t('changePassword.newPassword')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter your new password" {...field} />
+                <Input
+                  type="password"
+                  placeholder={t('changePassword.newPasswordPlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -118,9 +128,13 @@ export function ChangePasswordForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm password</FormLabel>
+              <FormLabel>{t('changePassword.confirmPassword')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Confirm your new password" {...field} />
+                <Input
+                  type="password"
+                  placeholder={t('changePassword.confirmPasswordPlaceholder')}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -128,7 +142,7 @@ export function ChangePasswordForm() {
         />
 
         <Button type="submit" className="bg-blue-brand text-white font-semibold">
-          Change password
+          {t('changePassword.save')}
         </Button>
       </form>
     </Form>

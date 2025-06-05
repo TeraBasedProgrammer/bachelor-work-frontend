@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { ActivityCategory, UserData } from '@/app/types';
 import { Button } from '@/components/ui/button';
 import { fileInputValidation } from '@/components/ui/file-upload';
@@ -27,6 +28,7 @@ import * as z from 'zod';
 interface BasicInfoFormProps {
   activityCategories: ActivityCategory[];
   userData: UserData | null;
+  lng: string;
 }
 
 const formSchema = (hasExistingImage: boolean) =>
@@ -43,10 +45,11 @@ const formSchema = (hasExistingImage: boolean) =>
 
 type FormValues = z.infer<ReturnType<typeof formSchema>>;
 
-const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userData }) => {
+const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userData, lng }) => {
   const [currentUser, setCurrentUser] = useState<UserData | null>(userData);
   const [isLoading, setIsLoading] = useState(false);
   const { data: sessionData, update: updateSession } = useSession();
+  const { t } = useTranslation(lng, 'profile');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema(currentUser?.profile_picture !== null)),
@@ -125,21 +128,20 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
       await updateSession(updatedSession);
 
       toast({
-        title: 'Success',
-        description: 'Profile updated successfully',
+        title: t('basicInfo.success'),
         variant: 'success',
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
-          title: 'Error',
+          title: t('basicInfo.error'),
           description: `${error.response?.data.detail}`,
           variant: 'destructive',
         });
       } else {
         toast({
-          title: 'Error',
-          description: `Failed to update profile: ${error}`,
+          title: t('basicInfo.error'),
+          description: `${error}`,
           variant: 'destructive',
         });
       }
@@ -151,14 +153,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-        <h2 className="text-4xl">Basic info</h2>
+        <h2 className="text-4xl">{t('basicInfo.title')}</h2>
 
         <FormField
           control={form.control}
           name="userAvatarInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Cover image</FormLabel>
+              <FormLabel>{t('basicInfo.avatar')}</FormLabel>
               <FormControl>
                 <div className="flex gap-4 items-center">
                   <Image
@@ -177,6 +179,8 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                     onChange={field.onChange}
                     maxFiles={1}
                     inputId="fileInput"
+                    placeholder={t('mentorInfo.fileInputPlaceholder')}
+                    helpText={t('mentorInfo.fileInputHelpText')}
                   />
                 </div>
               </FormControl>
@@ -190,9 +194,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
           name="emailInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('basicInfo.email')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your email" disabled type="email" {...field} />
+                <Input
+                  placeholder={t('basicInfo.emailPlaceholder')}
+                  disabled
+                  type="email"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -204,9 +213,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
           name="fullNameInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full name</FormLabel>
+              <FormLabel>{t('basicInfo.fullName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your name" {...field} />
+                <Input placeholder={t('basicInfo.fullNamePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -218,9 +227,9 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
           name="phoneNumberInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone number</FormLabel>
+              <FormLabel>{t('basicInfo.phone')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter phone number" {...field} />
+                <Input placeholder={t('basicInfo.phonePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -232,7 +241,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
           name="categoriesInput"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Categories</FormLabel>
+              <FormLabel>{t('basicInfo.categories')}</FormLabel>
               <FormControl>
                 <MultiSelect
                   options={activityCategories.map((category) => ({
@@ -241,7 +250,7 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
                   }))}
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Select categories"
+                  placeholder={t('basicInfo.categoriesPlaceholder')}
                   variant="inverted"
                   animation={2}
                   maxCount={3}
@@ -252,12 +261,14 @@ const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ activityCategories, userD
           )}
         />
 
-        <Button
-          type="submit"
-          className="bg-blue-brand text-white font-semibold"
-          disabled={isLoading}>
-          {isLoading ? 'Updating...' : 'Update'}
-        </Button>
+        <div className="flex justify-end gap-4">
+          <Button
+            type="submit"
+            className="bg-blue-brand text-white font-semibold"
+            disabled={isLoading}>
+            {isLoading ? t('basicInfo.saving') : t('basicInfo.save')}
+          </Button>
+        </div>
       </form>
     </Form>
   );

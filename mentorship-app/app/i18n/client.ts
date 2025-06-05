@@ -52,7 +52,7 @@ export function useTranslation(lng: string, ns: string, options = {}) {
     useEffect(() => {
       if (cookies.langCookie === lng) return;
       setCookie(cookieName, lng, { path: '/' });
-    }, [lng, cookies.langCookie]);
+    }, [lng, cookies.langCookie, setCookie]);
   }
   return ret;
 }

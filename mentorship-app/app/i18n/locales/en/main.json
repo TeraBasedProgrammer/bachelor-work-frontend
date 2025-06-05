@@ -1,0 +1,35 @@
+{
+    "loading": "Loading...",
+    "applyFilters": "Apply Filters",
+    "search": {
+        "title": "Title",
+        "titlePlaceholder": "Search by title",
+        "minPrice": "Min Price",
+        "minPricePlaceholder": "Min price",
+        "maxPrice": "Max Price",
+        "maxPricePlaceholder": "Max price",
+        "type": "Type",
+        "typePlaceholder": "Select type",
+        "sortBy": "Sort By",
+        "sortByPlaceholder": "Sort by",
+        "order": "Order",
+        "orderPlaceholder": "Sort order",
+        "ascending": "Ascending",
+        "descending": "Descending"
+    },
+    "serviceTypes": {
+        "all": "All Types",
+        "seeking": "Seeking Mentor",
+        "offering": "Offering Mentorship"
+    },
+    "sortFields": {
+        "date": "Date",
+        "price": "Price",
+        "views": "Views",
+        "title": "Title"
+    },
+    "errors": {
+        "title": "Error",
+        "fetchFailed": "Failed to fetch posts"
+    }
+}

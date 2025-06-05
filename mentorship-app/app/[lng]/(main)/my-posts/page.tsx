@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Post } from '@/app/types';
 import {
   AlertDialog,
@@ -38,6 +39,7 @@ export default function MyPostsPage() {
   const { data: session } = useSession();
   const lng = useParams().lng;
   const router = useRouter();
+  const { t } = useTranslation(lng as string, 'posts');
 
   const fetchPosts = async () => {
     if (!session?.accessToken) return;
@@ -105,6 +107,7 @@ export default function MyPostsPage() {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.accessToken]);
 
   if (isLoading) {
@@ -120,21 +123,21 @@ export default function MyPostsPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">My Posts</h1>
+        <h1 className="text-3xl font-bold">{t('myposts.title')}</h1>
         <Button
           className="mt-4 bg-blue-brand hover:bg-blue-brand/90 text-white font-semibold"
           onClick={() => router.push(`/${lng}/my-posts/create`)}>
-          Create New Post
+          {t('createNewPost')}
         </Button>
       </div>
 
       {posts.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-gray-500">You haven't created any posts yet.</p>
+          <p className="text-gray-500">{t('myposts.noPosts')}</p>
           <Button
             className="mt-4 bg-blue-brand hover:bg-blue-brand/90 text-white font-semibold"
             onClick={() => router.push(`/${lng}/my-posts/create`)}>
-            Create Your First Post
+            {t('myposts.createPost')}
           </Button>
         </div>
       ) : (
@@ -159,7 +162,9 @@ export default function MyPostsPage() {
                 <div className="flex items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Eye className="h-4 w-4" />
-                    <span>{post.number_of_views} views</span>
+                    <span>
+                      {post.number_of_views} {t('views')}
+                    </span>
                   </div>
                   <div>
                     <span className="font-medium">{post.service_price}$</span>
@@ -176,7 +181,7 @@ export default function MyPostsPage() {
                   size="sm"
                   onClick={() => router.push(`/${lng}/my-posts/${post.id}/edit`)}>
                   <Pencil className="h-4 w-4 mr-2" />
-                  Edit
+                  {t('editPost')}
                 </Button>
                 <Button
                   className="bg-red-500 hover:bg-red-500/90 text-white font-semibold"
@@ -186,7 +191,7 @@ export default function MyPostsPage() {
                     setDeleteModalOpen(true);
                   }}>
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
+                  {t('deletePost')}
                 </Button>
               </CardFooter>
             </Card>
@@ -197,17 +202,15 @@ export default function MyPostsPage() {
       <AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your post.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t('areYouSure')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('thisActionCannotBeUndone')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-red-500 hover:bg-red-500/90 text-white font-semibold"
               onClick={handleDelete}>
-              Delete
+              {t('deletePost')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

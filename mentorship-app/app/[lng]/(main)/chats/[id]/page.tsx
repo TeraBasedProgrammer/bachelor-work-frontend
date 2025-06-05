@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -46,6 +47,8 @@ export default function ChatPage() {
   const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const { data: session } = useSession();
   const { id } = useParams();
+  const lng = useParams().lng;
+  const { t } = useTranslation(lng as string, 'chats');
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceFormSchema),
@@ -83,6 +86,7 @@ export default function ChatPage() {
           ...values,
           amount: Number(values.amount),
           mentor_id: session.user.id,
+          // @ts-expect-error conversationData is not typed
           mentee_id: Object.entries(conversationData!.participants).find(
             ([id]) => id !== session.user.id,
           )[0],
@@ -119,24 +123,24 @@ export default function ChatPage() {
   };
 
   if (!session || !conversationData) {
-    return <p className="text-2xl font-bold text-center mt-10">Loading...</p>;
+    return <p className="text-2xl font-bold text-center mt-10">{t('loading')}</p>;
   }
 
   return (
     <div className="container mx-auto py-10">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Chat</h1>
+          <h1 className="text-2xl font-bold">{t('chat')}</h1>
           <Dialog open={isInvoiceDialogOpen} onOpenChange={setIsInvoiceDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-brand hover:bg-blue-brand/90 text-white font-semibold">
-                Create Invoice
+                {t('createInvoice')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Create Invoice</DialogTitle>
-                <DialogDescription>Create a new invoice for this conversation.</DialogDescription>
+                <DialogTitle>{t('createInvoice')}</DialogTitle>
+                <DialogDescription>{t('createInvoiceDescription')}</DialogDescription>
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -146,11 +150,11 @@ export default function ChatPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Amount{' '}
+                          {t('amount')}
                           <PiCoinVerticalFill className="w-5 h-5 text-yellow-500 inline-block" />
                         </FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Enter amount" {...field} />
+                          <Input type="number" placeholder={t('amountPlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -161,10 +165,10 @@ export default function ChatPage() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>{t('description')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter invoice description"
+                            placeholder={t('descriptionPlaceholder')}
                             className="min-h-[100px]"
                             {...field}
                           />
@@ -178,7 +182,7 @@ export default function ChatPage() {
                     name="due_date"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Due Date</FormLabel>
+                        <FormLabel>{t('dueDate')}</FormLabel>
                         <FormControl>
                           <Input type="datetime-local" {...field} />
                         </FormControl>
@@ -191,12 +195,12 @@ export default function ChatPage() {
                       type="button"
                       variant="secondary"
                       onClick={() => setIsInvoiceDialogOpen(false)}>
-                      Cancel
+                      {t('cancel')}
                     </Button>
                     <Button
                       type="submit"
                       className="bg-blue-brand hover:bg-blue-brand/90 text-white font-semibold">
-                      Create Invoice
+                      {t('createInvoice')}
                     </Button>
                   </DialogFooter>
                 </form>

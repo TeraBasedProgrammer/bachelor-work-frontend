@@ -1,0 +1,35 @@
+{
+    "loading": "Завантаження...",
+    "applyFilters": "Застосувати фільтри",
+    "search": {
+        "title": "Назва",
+        "titlePlaceholder": "Пошук за назвою",
+        "minPrice": "Мінімальна ціна",
+        "minPricePlaceholder": "Мін. ціна",
+        "maxPrice": "Максимальна ціна",
+        "maxPricePlaceholder": "Макс. ціна",
+        "type": "Тип",
+        "typePlaceholder": "Виберіть тип",
+        "sortBy": "Сортувати за",
+        "sortByPlaceholder": "Сортувати за",
+        "order": "Порядок",
+        "orderPlaceholder": "Порядок сортування",
+        "ascending": "За зростанням",
+        "descending": "За спаданням"
+    },
+    "serviceTypes": {
+        "all": "Всі типи",
+        "seeking": "Шукаю ментора",
+        "offering": "Пропоную менторство"
+    },
+    "sortFields": {
+        "date": "Датою",
+        "price": "Ціною",
+        "views": "Переглядами",
+        "title": "Назвою"
+    },
+    "errors": {
+        "title": "Помилка",
+        "fetchFailed": "Не вдалося завантажити пости"
+    }
+}

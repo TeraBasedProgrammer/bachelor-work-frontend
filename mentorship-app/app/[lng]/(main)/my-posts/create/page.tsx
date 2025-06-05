@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { ActivityCategory } from '@/app/types';
 import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
@@ -15,6 +16,7 @@ export default function CreatePostPage() {
   const { data: session } = useSession();
   const lng = useParams().lng;
   const router = useRouter();
+  const { t } = useTranslation(lng as string, 'posts');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -63,7 +65,7 @@ export default function CreatePostPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Create New Post</h1>
+        <h1 className="text-3xl font-bold mb-8">{t('createNewPost')}</h1>
         <PostForm activityCategories={activityCategories} />
       </div>
     </div>

@@ -107,6 +107,7 @@ export default function PostPage() {
 
       const conversations = response.data.data;
       const conversationWithPostUser = conversations.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (conversation: any) =>
           conversation.participants[sessionData.user.id] &&
           post?.user.id &&

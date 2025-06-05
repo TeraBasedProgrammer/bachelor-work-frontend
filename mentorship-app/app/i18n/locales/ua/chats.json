@@ -1,0 +1,17 @@
+{
+    "title": "Мої чати",
+    "noChats": "Ще немає чатів",
+    "createChat": "Створити чат",
+    "noMessagesYet": "Ще немає повідомлень",
+    "createInvoice": "Створити рахунок",
+    "chat": "Чат",
+    "loading": "Завантаження...",
+    "createInvoiceDescription": "Створити рахунок для цього чату",
+    "amount": "Сума",
+    "amountPlaceholder": "Введіть суму",
+    "description": "Опис",
+    "descriptionPlaceholder": "Введіть опис",
+    "submit": "Створити рахунок",
+    "cancel": "Скасувати",
+    "dueDate": "Термін оплати"
+}

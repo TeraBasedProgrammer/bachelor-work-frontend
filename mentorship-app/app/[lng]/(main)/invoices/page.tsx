@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -17,6 +18,7 @@ import { axiosInstance } from '@/lib/services/axiosConfig';
 import { AxiosError } from 'axios';
 import { format } from 'date-fns';
 import { useSession } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { PiCoinVerticalFill } from 'react-icons/pi';
 
@@ -46,7 +48,8 @@ export default function InvoicesPage() {
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [cancellationReason, setCancellationReason] = useState('');
   const [userDetails, setUserDetails] = useState<Record<string, UserDetails>>({});
-  console.log(invoices.map((invoice) => invoice.status));
+  const lng = useParams().lng;
+  const { t } = useTranslation(lng as string, 'invoices');
 
   const fetchUserDetails = async (userId: string) => {
     if (!session?.accessToken || userDetails[userId]) return;
@@ -159,6 +162,7 @@ export default function InvoicesPage() {
 
   useEffect(() => {
     fetchInvoices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.accessToken]);
 
   if (isLoading) {
@@ -173,10 +177,10 @@ export default function InvoicesPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-6">My Invoices</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('title')}</h1>
       <div className="space-y-4">
         {invoices.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No invoices found</p>
+          <p className="text-gray-500 text-center py-8">{t('noInvoices')}</p>
         ) : (
           invoices.map((invoice) => {
             const isMentee = session?.user?.id === invoice.mentee_id;
@@ -189,10 +193,10 @@ export default function InvoicesPage() {
                   <div className="flex items-center gap-4">
                     <div>
                       <h3 className="font-semibold">
-                        {isMentee ? 'From' : 'To'}: {otherUserName}
+                        {isMentee ? t('from') : t('to')}: {otherUserName}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        Due: {format(new Date(invoice.due_date), 'MMM d, yyyy HH:mm')}
+                        {t('due')}: {format(new Date(invoice.due_date), 'MMM d, yyyy HH:mm')}
                       </p>
                     </div>
                   </div>
@@ -228,12 +232,12 @@ export default function InvoicesPage() {
                           variant="outline"
                           className="text-red-600 hover:text-red-700"
                           onClick={() => handleCancelClick(invoice.id)}>
-                          Cancel
+                          {t('cancel')}
                         </Button>
                         <Button
                           className="bg-green-600 hover:bg-green-700 text-white"
                           onClick={() => updateInvoiceStatus(invoice.id, 'A')}>
-                          Mark as Paid
+                          {t('markAsPaid')}
                         </Button>
                       </>
                     ) : (
@@ -242,12 +246,12 @@ export default function InvoicesPage() {
                           variant="outline"
                           className="text-red-600 hover:text-red-700"
                           onClick={() => handleCancelClick(invoice.id)}>
-                          Cancel Invoice
+                          {t('cancelInvoice')}
                         </Button>
                         <Button
                           className="bg-green-600 hover:bg-green-700 text-white"
                           onClick={() => updateInvoiceStatus(invoice.id, 'A')}>
-                          Mark as Paid
+                          {t('markAsPaid')}
                         </Button>
                       </>
                     )}
@@ -257,14 +261,14 @@ export default function InvoicesPage() {
                 {invoice.status === 'C' && invoice.cancellation_reason && (
                   <div className="mt-4 p-3 bg-red-50 rounded-md">
                     <p className="text-sm text-red-600">
-                      <span className="font-semibold">Cancellation Reason:</span>{' '}
+                      <span className="font-semibold">{t('cancellationReason')}:</span>{' '}
                       {invoice.cancellation_reason}
                     </p>
                   </div>
                 )}
 
                 <div className="mt-4 text-sm text-gray-500">
-                  Created: {format(new Date(invoice.created_at), 'MMM d, yyyy')}
+                  {t('created')}: {format(new Date(invoice.created_at), 'MMM d, yyyy')}
                 </div>
               </Card>
             );
@@ -275,31 +279,29 @@ export default function InvoicesPage() {
       <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel Invoice</DialogTitle>
-            <DialogDescription>
-              Please provide a reason for canceling this invoice.
-            </DialogDescription>
+            <DialogTitle>{t('cancelInvoice')}</DialogTitle>
+            <DialogDescription>{t('pleaseProvideReason')}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="reason">Cancellation Reason</Label>
+              <Label htmlFor="reason">{t('cancellationReason')}</Label>
               <Input
                 id="reason"
                 value={cancellationReason}
                 onChange={(e) => setCancellationReason(e.target.value)}
-                placeholder="Enter reason for cancellation"
+                placeholder={t('enterReasonForCancellation')}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCancelDialogOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleCancelConfirm}
               disabled={!cancellationReason.trim()}>
-              Confirm Cancellation
+              {t('confirmCancellation')}
             </Button>
           </DialogFooter>
         </DialogContent>

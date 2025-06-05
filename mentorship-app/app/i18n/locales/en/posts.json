@@ -1,0 +1,31 @@
+{
+    "editPost": "Edit",
+    "editPostTitle": "Edit Post",
+    "deletePost": "Delete",
+    "createNewPost": "Create New Post",
+    "cancel": "Cancel",
+    "updatePost": "Update Post",
+    "saving": "Saving...",
+    "areYouSure": "Are you sure?",
+    "thisActionCannotBeUndone": "This action cannot be undone. This will permanently delete your post.",
+    "views": "views",
+    "myposts": {
+        "title": "My Posts",
+        "noPosts": "You haven't created any posts yet",
+        "createPost": "Create your first post"
+    },
+    "postForm": {
+        "title": "Create New Post",
+        "titlePlaceholder": "Enter post title",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter post description",
+        "price": "Price",
+        "pricePlaceholder": "Enter price",
+        "serviceType": "Service Type",
+        "Seeking Mentor": "Seeking Mentor",
+        "Offering Mentorship": "Offering Mentorship",
+        "categories": "Categories",
+        "selectCategories": "Select categories",
+        "submit": "Create Post"
+    }
+}

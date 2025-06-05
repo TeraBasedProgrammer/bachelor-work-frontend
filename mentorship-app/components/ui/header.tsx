@@ -1,10 +1,10 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Home, LogOut, MessageCircle, Pencil, User } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { PiCoinVerticalFill } from 'react-icons/pi';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import { LangSwitcher } from './language-switcher';
 export default function Header() {
   const { lng } = useParams();
   const { data: session } = useSession();
+  const { t } = useTranslation(lng as string, 'header');
 
   return (
     <header className="bg-white shadow-sm">
@@ -27,12 +28,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <Link href={`/${lng}`}>
             <div className="flex items-center gap-2">
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                alt="Logo"
-              />
-              <span className="font-bold text-lg text-gray-800 hidden sm:block">MyApp</span>
+              <span className="font-bold text-lg text-gray-800 hidden sm:block">Knowlity</span>
             </div>
           </Link>
         </div>
@@ -40,30 +36,25 @@ export default function Header() {
         {/* Centered navigation links */}
         <div className="hidden md:flex gap-8 items-center text-gray-700 font-medium">
           <Link href={`/${lng}`} className="hover:text-blue-600 transition-colors">
-            Home
+            {t('home')}
           </Link>
           <Link href={`/${lng}/my-posts`} className="hover:text-blue-600 transition-colors">
-            My Posts
+            {t('myPosts')}
           </Link>
           <Link href={`/${lng}/chats`} className="hover:text-blue-600 transition-colors">
-            Chats
+            {t('chats')}
           </Link>
           <Link href={`/${lng}/profile`} className="hover:text-blue-600 transition-colors">
-            Profile
+            {t('profile')}
           </Link>
           <Link href={`/${lng}/invoices`} className="hover:text-blue-600 transition-colors">
-            Invoices
+            {t('invoices')}
           </Link>
         </div>
 
         {/* Right part */}
         <div className="flex items-center gap-6">
           <LangSwitcher lng={lng as string} />
-          {/* Balance */}
-          <div className="flex items-center gap-2 text-gray-600">
-            <PiCoinVerticalFill className="w-5 h-5 text-yellow-500" />
-            <span className="font-semibold">{session?.user?.balance ?? 0}</span>
-          </div>
 
           {/* Avatar menu */}
           <DropdownMenu>
@@ -85,25 +76,25 @@ export default function Header() {
               <DropdownMenuItem asChild>
                 <Link href={`/${lng}`} className="flex items-center gap-2">
                   <Home size={18} />
-                  Home
+                  {t('home')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/${lng}/my-posts`} className="flex items-center gap-2">
                   <Pencil size={18} />
-                  My Posts
+                  {t('myPosts')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/${lng}/chats`} className="flex items-center gap-2">
                   <MessageCircle size={18} />
-                  Chats
+                  {t('chats')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/${lng}/profile`} className="flex items-center gap-2">
                   <User size={18} />
-                  Profile
+                  {t('profile')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -114,7 +105,7 @@ export default function Header() {
                 }
                 className="flex cursor-pointer flex-row gap-2 items-center text-red-500">
                 <LogOut size={18} />
-                <span>Log out</span>
+                <span>{t('logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

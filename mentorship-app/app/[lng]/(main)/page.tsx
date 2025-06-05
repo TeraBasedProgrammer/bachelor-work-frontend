@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { Post } from '@/app/types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -45,16 +46,16 @@ const filterSchema = z.object({
 type FilterValues = z.infer<typeof filterSchema>;
 
 const serviceTypeOptions = [
-  { value: 'ALL', label: 'All Types' },
-  { value: 'S', label: 'Seeking Mentor' },
-  { value: 'P', label: 'Offering Mentorship' },
+  { value: 'ALL', label: 'serviceTypes.all' },
+  { value: 'S', label: 'serviceTypes.seeking' },
+  { value: 'P', label: 'serviceTypes.offering' },
 ];
 
 const sortFieldOptions = [
-  { value: 'created_at', label: 'Date' },
-  { value: 'service_price', label: 'Price' },
-  { value: 'number_of_views', label: 'Views' },
-  { value: 'title', label: 'Title' },
+  { value: 'created_at', label: 'sortFields.date' },
+  { value: 'service_price', label: 'sortFields.price' },
+  { value: 'number_of_views', label: 'sortFields.views' },
+  { value: 'title', label: 'sortFields.title' },
 ];
 
 export default function Home() {
@@ -63,7 +64,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const lng = useParams().lng;
+  const params = useParams();
+  const lng = params.lng as string;
+  const { t } = useTranslation(lng, 'main');
 
   const form = useForm<FilterValues>({
     resolver: zodResolver(filterSchema),
@@ -105,14 +108,14 @@ export default function Home() {
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
-          title: 'Error',
+          title: t('errors.title'),
           description: error.response?.data.message,
           variant: 'destructive',
         });
       } else {
         toast({
-          title: 'Error',
-          description: 'Failed to fetch posts',
+          title: t('errors.title'),
+          description: t('errors.fetchFailed'),
           variant: 'destructive',
         });
       }
@@ -128,12 +131,13 @@ export default function Home() {
 
   useEffect(() => {
     fetchPosts(currentPage, form.getValues());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, session?.accessToken]);
 
   if (isLoading) {
     return (
       <div className="container mx-auto py-10 flex justify-center">
-        <p>Loading...</p>
+        <p>{t('loading')}</p>
       </div>
     );
   }
@@ -149,9 +153,9 @@ export default function Home() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t('search.title')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Search by title" {...field} />
+                      <Input placeholder={t('search.titlePlaceholder')} {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -162,9 +166,13 @@ export default function Home() {
                 name="min_price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Min Price</FormLabel>
+                    <FormLabel>{t('search.minPrice')}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Min price" {...field} />
+                      <Input
+                        type="number"
+                        placeholder={t('search.minPricePlaceholder')}
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -175,9 +183,13 @@ export default function Home() {
                 name="max_price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Max Price</FormLabel>
+                    <FormLabel>{t('search.maxPrice')}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Max price" {...field} />
+                      <Input
+                        type="number"
+                        placeholder={t('search.maxPricePlaceholder')}
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -188,17 +200,17 @@ export default function Home() {
                 name="service_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>{t('search.type')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue placeholder={t('search.typePlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {serviceTypeOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(option.label)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -212,17 +224,17 @@ export default function Home() {
                 name="sort_field"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sort By</FormLabel>
+                    <FormLabel>{t('search.sortBy')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sort by" />
+                          <SelectValue placeholder={t('search.sortByPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {sortFieldOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(option.label)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -236,16 +248,16 @@ export default function Home() {
                 name="sort_order"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Order</FormLabel>
+                    <FormLabel>{t('search.order')}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sort order" />
+                          <SelectValue placeholder={t('search.orderPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="asc">Ascending</SelectItem>
-                        <SelectItem value="desc">Descending</SelectItem>
+                        <SelectItem value="asc">{t('search.ascending')}</SelectItem>
+                        <SelectItem value="desc">{t('search.descending')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -255,7 +267,7 @@ export default function Home() {
 
             <div className="flex justify-end">
               <Button className="bg-blue-brand text-white font-semibold" type="submit">
-                Apply Filters
+                {t('applyFilters')}
               </Button>
             </div>
           </form>

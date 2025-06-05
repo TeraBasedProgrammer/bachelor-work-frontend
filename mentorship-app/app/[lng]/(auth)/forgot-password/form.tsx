@@ -48,7 +48,8 @@ export default function ForgotPasswordForm() {
         description: 'Check your inbox for instructions to reset your password.',
       });
       setIsSubmitted(true);
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       toast({
         title: 'Error',
         description: 'Failed to send reset email. Please try again later.',
@@ -64,8 +65,8 @@ export default function ForgotPasswordForm() {
       <div className="space-y-6 border-2 border-gray-200 rounded-md py-8 px-14 mx-auto backdrop-blur-sm">
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">Check your email</h2>
         <p className="text-center">
-          We've sent password reset instructions to your email address. Please check your inbox and
-          follow the link to reset your password.
+          We&apos;ve sent password reset instructions to your email address. Please check your inbox
+          and follow the link to reset your password.
         </p>
         <div className="flex justify-center">
           <Link href={`/${lng}/login`}>
@@ -84,7 +85,7 @@ export default function ForgotPasswordForm() {
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">Forgot Password</h2>
 
         <p className="text-center">
-          Enter your email address and we'll send you instructions to reset your password.
+          Enter your email address and we&apos;ll send you instructions to reset your password.
         </p>
 
         <FormField

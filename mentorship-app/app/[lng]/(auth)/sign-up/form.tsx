@@ -241,7 +241,9 @@ export default function SignUpForm() {
 
       // ✅ Redirect using Next.js router
       router.push(result?.url || `/${lng}/profile`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.log(error);
       toast({
         title: 'Sign up failed',
         description:

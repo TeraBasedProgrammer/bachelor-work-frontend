@@ -48,13 +48,13 @@ export default function LoginForm({ lng }: { lng: string }) {
 
       if (!res) {
         toast({
-          title: 'Unexpected Error',
-          description: 'Something went wrong. Please try again later.',
+          title: t('unexpectedError'),
+          description: t('somethingWentWrong'),
           variant: 'destructive',
         });
       } else if (res.error) {
         toast({
-          title: 'Login Failed',
+          title: t('loginFailed'),
           description: res.code,
           variant: 'destructive',
         });
@@ -62,15 +62,16 @@ export default function LoginForm({ lng }: { lng: string }) {
         router.push(`/${lng}/profile`);
       } else {
         toast({
-          title: 'Login Failed',
-          description: 'Invalid email or password. Please try again.',
+          title: t('loginFailed'),
+          description: t('invalidCredentials'),
           variant: 'destructive',
         });
       }
     } catch (err) {
+      console.log(err);
       toast({
-        title: 'Network Error',
-        description: 'Could not connect to the server. Please try again.',
+        title: t('networkError'),
+        description: t('connectionError'),
         variant: 'destructive',
       });
     } finally {
@@ -86,8 +87,8 @@ export default function LoginForm({ lng }: { lng: string }) {
       });
     } catch {
       toast({
-        title: 'Google Login Failed',
-        description: 'Unable to sign in with Google. Try again later.',
+        title: t('googleLoginFailed'),
+        description: t('googleSignInError'),
         variant: 'destructive',
       });
       setIsLoading(false);

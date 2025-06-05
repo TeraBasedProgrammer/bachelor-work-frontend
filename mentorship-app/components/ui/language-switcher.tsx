@@ -3,7 +3,6 @@
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { useTranslation } from '@/app/i18n/client';
 import { languageNames, languages } from '@/app/i18n/settings';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,7 +29,6 @@ export function LangSwitcher({ lng, className }: Readonly<Props>) {
   const [value, setValue] = React.useState(lng);
   const router = useRouter();
   const pathName = usePathname();
-  const { t } = useTranslation(lng, 'navbar');
 
   const handleLanguageSwitch = (selectedLang: string) => {
     const newPath = pathName.replace(`/${lng}/`, `/${selectedLang}/`);

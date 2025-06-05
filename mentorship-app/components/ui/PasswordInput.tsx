@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Control, Controller } from 'react-hook-form';
 
 interface PasswordInputProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: Control<any>;
   name: string;
   disabled?: boolean;

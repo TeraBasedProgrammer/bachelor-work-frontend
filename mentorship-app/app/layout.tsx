@@ -1,9 +1,9 @@
 import { CookiesProvider } from '@/components/providers/CookiesProvider';
-import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Toaster } from '@/components/providers/Toaster';
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 
 const geistSans = Geist({
@@ -29,14 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <CookiesProvider>
-          <SessionProvider>
-            <QueryProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <CookiesProvider>
+            <SessionProvider>
               {children}
               <Toaster />
-            </QueryProvider>
-          </SessionProvider>
-        </CookiesProvider>
+            </SessionProvider>
+          </CookiesProvider>
+        </Suspense>
       </body>
     </html>
   );

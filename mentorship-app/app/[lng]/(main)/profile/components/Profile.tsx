@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { ActivityCategory, UserData } from '@/app/types';
 import { axiosInstance } from '@/lib/services/axiosConfig';
 import { useSession } from 'next-auth/react';
@@ -37,10 +38,11 @@ async function getUserProfile(accessToken: string): Promise<UserData | null> {
   }
 }
 
-export default function Profile() {
+export default function Profile({ lng }: { lng: string }) {
   const { data: session, update: updateSession } = useSession();
   const [activityCategories, setActivityCategories] = useState<ActivityCategory[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const { t } = useTranslation(lng, 'profile');
 
   useEffect(() => {
     const fetchDataAndUpdateSession = async () => {
@@ -80,12 +82,13 @@ export default function Profile() {
     };
 
     fetchDataAndUpdateSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.accessToken]);
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
       <div className="bg-white shadow-lg rounded-lg p-10 space-y-10">
-        <h1 className="text-center text-4xl font-extrabold text-gray-800">User Profile</h1>
+        <h1 className="text-center text-4xl font-extrabold text-gray-800">{t('userProfile')}</h1>
 
         {!userData ? (
           <div className="flex justify-center items-center min-h-[300px]">
@@ -94,25 +97,33 @@ export default function Profile() {
         ) : (
           <>
             <section className="space-y-6">
-              <BasicInfoForm activityCategories={activityCategories} userData={userData} />
+              <BasicInfoForm
+                activityCategories={activityCategories}
+                userData={userData}
+                lng={lng}
+              />
             </section>
 
             <div className="border-t border-gray-300 my-8" />
 
             <section className="space-y-6">
-              <MentorInfoForm activityCategories={activityCategories} userData={userData} />
+              <MentorInfoForm
+                activityCategories={activityCategories}
+                userData={userData}
+                lng={lng}
+              />
             </section>
 
             <div className="border-t border-gray-300 my-8" />
 
             <section className="space-y-6">
-              <ChangePasswordForm />
+              <ChangePasswordForm lng={lng} />
             </section>
 
             <div className="border-t border-gray-300 my-8" />
 
             <section className="space-y-6">
-              <BalanceInfo userData={userData} />
+              <BalanceInfo userData={userData} lng={lng} />
             </section>
           </>
         )}

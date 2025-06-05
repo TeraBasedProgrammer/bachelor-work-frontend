@@ -1,0 +1,14 @@
+{
+    "title": "My Invoices",
+    "noInvoices": "No invoices found",
+    "markAsPaid": "Mark as Paid",
+    "cancelInvoice": "Cancel Invoice",
+    "cancellationReason": "Cancellation Reason",
+    "pleaseProvideReason": "Please provide a reason for canceling this invoice.",
+    "enterReasonForCancellation": "Enter reason for cancellation",
+    "confirmCancellation": "Confirm Cancellation",
+    "created": "Created",
+    "to": "To",
+    "due": "Due",
+    "from": "From"
+}

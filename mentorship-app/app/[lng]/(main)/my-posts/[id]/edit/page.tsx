@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { ActivityCategory, Post } from '@/app/types';
 import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
@@ -17,6 +18,7 @@ export default function EditPostPage() {
   const params = useParams();
   const lng = useParams().lng;
   const router = useRouter();
+  const { t } = useTranslation(lng as string, 'posts');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +80,7 @@ export default function EditPostPage() {
   return (
     <div className="container mx-auto py-10">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Edit Post</h1>
+        <h1 className="text-3xl font-bold mb-8">{t('editPostTitle')}</h1>
         <PostForm activityCategories={activityCategories} post={post} />
       </div>
     </div>

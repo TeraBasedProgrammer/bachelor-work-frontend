@@ -1,0 +1,17 @@
+{
+    "title": "My Chats",
+    "noChats": "No chats yet",
+    "createChat": "Create chat",
+    "noMessagesYet": "No messages yet",
+    "createInvoice": "Create invoice",
+    "chat": "Chat",
+    "loading": "Loading...",
+    "createInvoiceDescription": "Create an invoice for this conversation",
+    "amount": "Amount",
+    "amountPlaceholder": "Enter amount",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter description",
+    "submit": "Create invoice",
+    "cancel": "Cancel",
+    "dueDate": "Due date"
+}

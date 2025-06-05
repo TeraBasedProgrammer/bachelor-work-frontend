@@ -1,5 +1,6 @@
 import LoginForm from './form';
 
-export default function LoginPage({ params: { lng } }: { params: { lng: string } }) {
+export default async function LoginPage({ params }: { params: Promise<{ lng: string }> }) {
+  const { lng } = await params;
   return <LoginForm lng={lng} />;
 }

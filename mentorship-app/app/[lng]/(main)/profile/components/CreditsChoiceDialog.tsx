@@ -1,3 +1,4 @@
+import { useTranslation } from '@/app/i18n/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -35,7 +36,8 @@ const creditsVariants = [
   },
 ];
 
-export default function CreditsChoiceDialog() {
+export default function CreditsChoiceDialog({ lng }: { lng: string }) {
+  const { t } = useTranslation(lng, 'profile');
   const [isLoading, setIsLoading] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -92,18 +94,20 @@ export default function CreditsChoiceDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-brand text-white">Increase Balance</Button>
+        <Button className="bg-blue-brand text-white">{t('balance.increaseBalance')}</Button>
       </DialogTrigger>
       <DialogContent className="w-3xl max-w-full mx-auto">
         <DialogHeader>
-          <DialogTitle className="text-center">Choose credits amount</DialogTitle>
+          <DialogTitle className="text-center">{t('creditsDialog.title')}</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {creditsVariants.map((variant) => (
             <Card key={variant.title} className="h-full">
               <CardHeader>
-                <CardTitle>{variant.title}</CardTitle>
-                <CardDescription className="min-h-[60px]">{variant.description}</CardDescription>
+                <CardTitle>{t(`creditsDialog.${variant.title}`)}</CardTitle>
+                <CardDescription className="min-h-[60px]">
+                  {t(`creditsDialog.${variant.description}`)}
+                </CardDescription>
                 <p className="text-xl font-bold text-center">${variant.price}</p>
               </CardHeader>
               <CardFooter className="flex justify-center items-center">
@@ -111,7 +115,9 @@ export default function CreditsChoiceDialog() {
                   className="bg-blue-brand text-white w-full"
                   onClick={() => handlePurchase(variant)}
                   disabled={isLoading === variant.amount}>
-                  {isLoading === variant.amount ? 'Processing...' : 'Buy'}
+                  {isLoading === variant.amount
+                    ? t('creditsDialog.processing')
+                    : t('creditsDialog.buy')}
                 </Button>
               </CardFooter>
             </Card>

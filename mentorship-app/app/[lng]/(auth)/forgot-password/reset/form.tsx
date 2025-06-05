@@ -6,6 +6,7 @@ import { PasswordInput } from '@/components/ui/PasswordInput';
 import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios';
 import ErrorPage from 'next/error';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -63,12 +64,23 @@ export default function ResetPasswordForm() {
         description: 'Your password has been reset successfully.',
       });
       setIsSubmitted(true);
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to reset password. Please try again later.',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      console.log(err);
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 400) {
+          toast({
+            title: 'Error',
+            description: err.response?.data.detail,
+            variant: 'destructive',
+          });
+        }
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Failed to reset password. Please try again later.',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setIsLoading(false);
     }

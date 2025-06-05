@@ -19,6 +19,7 @@ export const { handlers, auth } = NextAuth({
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
+      // @ts-expect-error credentials is not typed
       async authorize(credentials) {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/auth/login`, {
           method: 'POST',
@@ -48,6 +49,7 @@ export const { handlers, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // @ts-expect-error profile is not typed
       async profile(profile, tokens) {
         try {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/auth/login/google`, {
@@ -90,14 +92,17 @@ export const { handlers, auth } = NextAuth({
       }
 
       if (user) {
+        // @ts-expect-error user is not typed
         token.accessToken = user.token;
+        // @ts-expect-error user is not typed
         token.user = user.user || null;
       }
       return token;
     },
 
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
+      session.accessToken = token.accessToken as string;
+      // @ts-expect-error user is not typed
       session.user = token.user || session.user;
       return session;
     },

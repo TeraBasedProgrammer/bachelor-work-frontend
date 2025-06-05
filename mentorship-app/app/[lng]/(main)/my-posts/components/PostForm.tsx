@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { ActivityCategory, Post } from '@/app/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,6 +58,7 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
   const lng = useParams().lng;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation(lng as string, 'posts');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -139,9 +141,9 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>{t('postForm.title')}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter post title" {...field} />
+                <Input placeholder={t('postForm.titlePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -153,10 +155,10 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t('postForm.description')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter post description"
+                  placeholder={t('postForm.descriptionPlaceholder')}
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -171,11 +173,11 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
           name="service_price"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Price</FormLabel>
+              <FormLabel>{t('postForm.price')}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter price"
+                  placeholder={t('postForm.pricePlaceholder')}
                   {...field}
                   value={field.value?.toString() || ''}
                 />
@@ -190,11 +192,11 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
           name="service_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Service Type</FormLabel>
+              <FormLabel>{t('postForm.serviceType')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select service type" />
+                    <SelectValue placeholder={t('postForm.selectServiceType')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-white">
@@ -215,7 +217,7 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
           name="category_ids"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Categories</FormLabel>
+              <FormLabel>{t('postForm.categories')}</FormLabel>
               <FormControl>
                 <MultiSelect
                   options={activityCategories.map((category) => ({
@@ -224,7 +226,7 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
                   }))}
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Select categories"
+                  placeholder={t('postForm.selectCategories')}
                   variant="inverted"
                   animation={2}
                   maxCount={3}
@@ -241,13 +243,13 @@ export default function PostForm({ activityCategories, post }: PostFormProps) {
             variant="secondary"
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold"
             onClick={() => router.push(`/${lng}/my-posts`)}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             type="submit"
             disabled={isLoading}
             className="bg-blue-brand hover:bg-blue-brand/90 text-white font-semibold">
-            {isLoading ? 'Saving...' : post ? 'Update Post' : 'Create Post'}
+            {isLoading ? t('saving') : post ? t('updatePost') : t('createNewPost')}
           </Button>
         </div>
       </form>

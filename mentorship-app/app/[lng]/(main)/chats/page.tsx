@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/app/i18n/client';
 import { UserData } from '@/app/types';
 import { toast } from '@/hooks/useToast';
 import { axiosInstance } from '@/lib/services/axiosConfig';
@@ -46,6 +47,7 @@ export default function MyChats() {
   const { data: session } = useSession();
   const [conversations, setConversations] = useState<ConversationWithUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation(lng as string, 'chats');
 
   const fetchUserData = async (userId: string) => {
     if (!session?.accessToken) return null;
@@ -113,22 +115,23 @@ export default function MyChats() {
     };
 
     fetchConversations();
-  }, [session?.accessToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.accessToken, session?.user?.id]);
 
   if (isLoading) {
     return (
       <div className="container mx-auto py-10 flex justify-center">
-        <p>Loading...</p>
+        <p>{t('loading')}</p>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-6">My Chats</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('title')}</h1>
       <div className="space-y-4">
         {conversations.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No chats yet</p>
+          <p className="text-gray-500 text-center py-8">{t('noChats')}</p>
         ) : (
           conversations.map((conversation) => {
             const otherParticipant = Object.entries(conversation.participants).find(
@@ -169,7 +172,7 @@ export default function MyChats() {
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                      {conversation.lastMessage?.text || 'No messages yet'}
+                      {conversation.lastMessage?.text || t('noMessagesYet')}
                     </p>
                   </div>
                   {conversation.unreadMessageCount > 0 && (
